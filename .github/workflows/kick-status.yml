@@ -1,0 +1,89 @@
+```yaml
+name: Update Kick Live Status
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-kick-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Kick status
+        shell: bash
+        run: |
+          set -e
+
+          API_URL="https://kick.com/api/v2/channels/sensei_fr"
+
+          echo "Checking Kick channel: sensei_fr"
+
+          RESPONSE=$(curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --max-time 20 \
+            "$API_URL" \
+            -H "Accept: application/json" \
+            -H "User-Agent: Mozilla/5.0")
+
+          echo "$RESPONSE" > /tmp/kick-response.json
+
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+          from datetime import datetime, timezone
+
+          response = json.loads(Path("/tmp/kick-response.json").read_text())
+
+          livestream = response.get("livestream")
+
+          if isinstance(livestream, dict):
+              is_live = bool(livestream.get("is_live", True))
+              title = livestream.get("session_title") or ""
+              viewers = livestream.get("viewer_count") or 0
+          else:
+              is_live = False
+              title = ""
+              viewers = 0
+
+          status = {
+              "live": is_live,
+              "channel": "sensei_fr",
+              "title": title,
+              "viewers": viewers,
+              "updated_at": datetime.now(timezone.utc).isoformat()
+          }
+
+          Path("kick-status.json").write_text(
+              json.dumps(status, ensure_ascii=False, indent=2) + "\n"
+          )
+
+          print(json.dumps(status, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Commit status if changed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add kick-status.json
+
+          if git diff --cached --quiet; then
+            echo "No status change."
+            exit 0
+          fi
+
+          git commit -m "Update Kick live status"
+          git push
+```
