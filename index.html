@@ -1054,20 +1054,15 @@ h1 {
 ========================================================= */
 
 #loader {
-
     position: fixed;
-
     inset: 0;
-
     z-index: 9999;
 
     display: flex;
-
     justify-content: center;
     align-items: center;
 
     background:
-
         radial-gradient(
             circle at center,
             #171717 0%,
@@ -1075,19 +1070,23 @@ h1 {
             #000 100%
         );
 
-    transition:
-
-        opacity .7s ease,
-
-        visibility .7s ease;
+    animation: hideLoader 0.7s ease 1.5s forwards;
 }
 
 
-#loader.hide {
+@keyframes hideLoader {
 
-    opacity: 0;
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
 
-    visibility: hidden;
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
 }
 
 
