@@ -1,4 +1,3 @@
-```yaml
 name: Update Kick Live Status
 
 on:
@@ -86,4 +85,3 @@ jobs:
 
           git commit -m "Update Kick live status"
           git push
-```
