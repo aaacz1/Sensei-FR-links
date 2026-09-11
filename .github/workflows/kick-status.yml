@@ -19,11 +19,9 @@ jobs:
       - name: Check Kick status
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
           API_URL="https://kick.com/api/v2/channels/sensei_fr"
-
-          echo "Checking Kick channel: sensei_fr"
 
           RESPONSE=$(curl \
             --fail \
@@ -33,53 +31,39 @@ jobs:
             --max-time 20 \
             "$API_URL" \
             -H "Accept: application/json" \
-            -H "User-Agent: Mozilla/5.0")
+            -H "User-Agent: Mozilla/5.0" \
+            -H "Origin: https://kick.com" \
+            -H "Referer: https://kick.com/")
 
-          echo "$RESPONSE" > /tmp/kick-response.json
+          printf '%s' "$RESPONSE" > /tmp/kick-response.json
 
           python3 <<'PY'
           import json
           from pathlib import Path
-          from datetime import datetime, timezone
 
-          response = json.loads(Path("/tmp/kick-response.json").read_text())
+          response = json.loads(Path('/tmp/kick-response.json').read_text())
+          livestream = response.get('livestream')
+          is_live = bool(isinstance(livestream, dict) and livestream.get('is_live') is True)
 
-          livestream = response.get("livestream")
-
-          if isinstance(livestream, dict):
-              is_live = bool(livestream.get("is_live", True))
-              title = livestream.get("session_title") or ""
-              viewers = livestream.get("viewer_count") or 0
-          else:
-              is_live = False
-              title = ""
-              viewers = 0
-
-          status = {
-              "live": is_live,
-              "channel": "sensei_fr",
-              "title": title,
-              "viewers": viewers,
-              "updated_at": datetime.now(timezone.utc).isoformat()
-          }
-
-          Path("kick-status.json").write_text(
-              json.dumps(status, ensure_ascii=False, indent=2) + "\n"
+          Path('kick-status.json').write_text(
+              json.dumps({'live': is_live}, indent=2) + '\n'
           )
 
-          print(json.dumps(status, ensure_ascii=False, indent=2))
+          print('Kick live:', is_live)
           PY
 
-      - name: Commit status if changed
+      - name: Commit only when status changes
         shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add kick-status.json
 
           if git diff --cached --quiet; then
-            echo "No status change."
+            echo "Kick status did not change."
             exit 0
           fi
 
