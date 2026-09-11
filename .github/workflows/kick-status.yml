@@ -21,7 +21,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          API_URL="https://kick.com/api/v2/channels/sensei_fr"
+          API_URL="https://kick.com/api/v2/channels/K0nkaMc"
 
           RESPONSE=$(curl \
             --fail \
