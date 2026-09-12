@@ -2,7 +2,7 @@ name: Update Kick Live Status
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -28,6 +28,8 @@ jobs:
             --silent \
             --show-error \
             --location \
+            --retry 3 \
+            --retry-delay 2 \
             --max-time 20 \
             "$API_URL" \
             -H "Accept: application/json" \
@@ -41,15 +43,22 @@ jobs:
           import json
           from pathlib import Path
 
-          response = json.loads(Path('/tmp/kick-response.json').read_text())
-          livestream = response.get('livestream')
-          is_live = bool(isinstance(livestream, dict) and livestream.get('is_live') is True)
-
-          Path('kick-status.json').write_text(
-              json.dumps({'live': is_live}, indent=2) + '\n'
+          response = json.loads(
+              Path("/tmp/kick-response.json").read_text()
           )
 
-          print('Kick live:', is_live)
+          livestream = response.get("livestream")
+
+          is_live = (
+              isinstance(livestream, dict)
+              and livestream.get("is_live") is True
+          )
+
+          Path("kick-status.json").write_text(
+              json.dumps({"live": is_live}, indent=2) + "\n"
+          )
+
+          print(f"Kick live: {is_live}")
           PY
 
       - name: Commit only when status changes
