@@ -17,6 +17,11 @@
 >
 
 <link
+    href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+<link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 >
@@ -37,7 +42,8 @@ html,
 body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
@@ -595,7 +601,7 @@ body {
 ========================================================= */
 
 #main {
-    position: fixed;
+    position: relative;
     inset: 0;
 
     z-index: 10;
@@ -605,13 +611,14 @@ body {
     align-items: center;
     justify-content: center;
 
-    padding: 10px;
+    min-height: 100vh;
+    padding: 24px 10px;
 
-    opacity: 0;
+    opacity: 1;
 
-    pointer-events: none;
+    pointer-events: auto;
 
-    transform: scale(.98);
+    transform: scale(1);
 
     transition:
         opacity .8s ease,
@@ -1300,38 +1307,6 @@ body {
 }
 
 
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-@keyframes backgroundPulse {
-
-    from {
-        transform: scale(1);
-        opacity: .65;
-    }
-
-    to {
-        transform: scale(1.08);
-        opacity: 1;
-    }
-
-}
-
-@keyframes orbOne {
-
-    from {
-        transform: translate(0,0);
-    }
-
-    to {
-        transform: translate(120px,60px);
-    }
-
-}
-
-@keyframes orbTwo {
-
     from {
         transform: translate(0,0);
     }
@@ -1608,6 +1583,1375 @@ body {
 
 }
 
+/* =========================================================
+   OPEN LAYOUT + BIT PAYMENT PANEL
+========================================================= */
+
+#main {
+    gap: clamp(44px, 8vw, 120px);
+    align-items: center;
+}
+
+.card {
+    width: min(520px, 100%);
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+.card::before,
+.card::after {
+    display: none;
+}
+
+.bit-panel {
+    width: min(290px, 100%);
+    direction: rtl;
+    text-align: center;
+    color: #fff;
+    animation: fadeUp .8s .15s ease both;
+}
+
+.bit-panel::before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 120px;
+    margin: 0 auto 28px;
+    background: linear-gradient(180deg, transparent, rgba(151, 165, 255, .7), transparent);
+}
+
+.bit-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 22px;
+    border-radius: 7px;
+    background: #20254d;
+    color: #aeb8ff;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    box-shadow: 0 0 30px rgba(123, 138, 255, .18);
+}
+
+.bit-title {
+    margin-bottom: 28px;
+    font-size: clamp(22px, 3vw, 31px);
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.bit-qr-frame {
+    display: grid;
+    place-items: center;
+    width: 250px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    padding: 10px;
+    border: 3px solid #9daaff;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 0 35px rgba(133, 148, 255, .18);
+}
+
+.bit-qr {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bit-note {
+    margin-top: 18px;
+    color: rgba(255, 255, 255, .48);
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.site-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    width: min(520px, 100%);
+    margin: 0 auto 24px;
+    direction: ltr;
+}
+
+.site-tab-button {
+    flex: 1;
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid rgba(178, 197, 255, .2);
+    border-radius: 12px;
+    background: rgba(14, 22, 40, .48);
+    color: rgba(225, 231, 255, .58);
+    font: 700 10px "Inter", sans-serif;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.site-tab-button:hover,
+.site-tab-button.active {
+    border-color: rgba(126, 231, 226, .6);
+    background: rgba(42, 75, 91, .58);
+    color: #fff;
+    box-shadow: 0 0 22px rgba(126, 231, 226, .1);
+}
+
+.site-tab-panel {
+    display: none;
+}
+
+.site-tab-panel.active {
+    display: block;
+}
+
+.schedule-panel {
+    width: min(720px, 100%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.schedule-title {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: clamp(24px, 4vw, 38px);
+}
+
+.schedule-message {
+    margin: 0 auto 22px;
+    color: var(--cyan);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.schedule-frame {
+    width: 100%;
+    height: 520px;
+    border: 1px solid rgba(178, 197, 255, .24);
+    border-radius: 18px;
+    background: rgba(10, 16, 29, .7);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .32);
+}
+
+.schedule-board {
+    display: grid;
+    gap: 12px;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.schedule-card {
+    padding: 20px 22px;
+    border: 1px solid rgba(178, 197, 255, .24);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(35, 48, 78, .72), rgba(13, 19, 34, .68));
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.schedule-card-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.schedule-card-value {
+    display: block;
+    color: #fff;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.schedule-card-time {
+    display: block;
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.schedule-day {
+    text-align: left;
+}
+
+.schedule-day-title {
+    margin: 0 0 7px;
+    padding-left: 4px;
+    color: #dce5ff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.schedule-empty,
+.stream-card {
+    min-height: 92px;
+    border-radius: 9px;
+}
+
+.schedule-empty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    border: 1px dashed rgba(225, 231, 255, .36);
+    background: rgba(3, 6, 12, .7);
+    color: rgba(225, 231, 255, .75);
+    font-size: 13px;
+}
+
+.schedule-empty img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    flex: 0 0 54px;
+}
+
+.stream-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px;
+    background: #242a31;
+    color: #fff;
+}
+
+.stream-thumb {
+    display: grid;
+    place-items: center;
+    flex: 0 0 64px;
+    height: 84px;
+    padding: 5px;
+    border-radius: 7px;
+    background: linear-gradient(160deg, #7d3d6d, #2f1833 70%, #11131b);
+    color: #fff;
+}
+
+.stream-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.stream-info {
+    direction: ltr;
+    text-align: left;
+}
+
+.stream-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.stream-time {
+    display: block;
+    margin-top: 7px;
+    color: #b6c8ff;
+    font-size: 13px;
+}
+
+.schedule-link {
+    display: inline-block;
+    margin-top: 14px;
+    color: #aeb8ff;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.schedule-link:hover {
+    color: var(--cyan);
+}
+
+.emoji-panel {
+    width: min(620px, 100%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.emoji-title {
+    margin: 0 0 24px;
+    color: #fff;
+    font-size: clamp(24px, 4vw, 38px);
+}
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.emoji-item {
+    display: grid;
+    place-items: center;
+    min-height: 128px;
+    padding: 14px;
+    border: 1px solid rgba(178, 197, 255, .2);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(35, 48, 78, .68), rgba(13, 19, 34, .68));
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.emoji-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(126, 231, 226, .62);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .28), 0 0 24px rgba(126, 231, 226, .1);
+}
+
+.emoji-item img {
+    display: block;
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+}
+
+@media (max-width: 520px) {
+    .emoji-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1150px) {
+    .site-tabs {
+        margin-bottom: 28px;
+    }
+}
+
+@media (max-width: 520px) {
+    .site-tabs {
+        gap: 5px;
+    }
+
+    .site-tab-button {
+        padding: 0 6px;
+        font-size: 8px;
+        letter-spacing: .8px;
+    }
+
+    .schedule-frame {
+        height: 440px;
+    }
+}
+
+@media (max-width: 820px) {
+    #main {
+        flex-direction: column;
+        gap: 44px;
+        padding: 42px 18px 30px;
+    }
+
+    .bit-panel {
+        order: 2;
+    }
+
+    .bit-panel::before {
+        width: 120px;
+        height: 1px;
+        margin: 0 auto 28px;
+        background: linear-gradient(90deg, transparent, rgba(151, 165, 255, .7), transparent);
+    }
+}
+
+/* =========================================================
+   VISUAL REFRESH
+========================================================= */
+
+:root {
+    --ink: #f7f8ff;
+    --muted: rgba(225, 231, 255, .56);
+    --line: rgba(178, 197, 255, .22);
+    --panel: rgba(20, 27, 46, .58);
+    --cyan: #7ee7e2;
+    --blue: #90a7ff;
+    --gold: #ffd479;
+}
+
+body {
+    background: #070a13;
+}
+
+#background {
+    background:
+        radial-gradient(circle at 50% 18%, rgba(47, 78, 137, .32), transparent 34%),
+        radial-gradient(circle at 82% 68%, rgba(37, 137, 139, .2), transparent 28%),
+        radial-gradient(circle at 15% 75%, rgba(112, 69, 139, .2), transparent 27%),
+        linear-gradient(135deg, #070a13 0%, #10182c 46%, #071117 100%);
+}
+
+#background::before {
+    inset: 0;
+    background:
+        linear-gradient(115deg, transparent 15%, rgba(126, 231, 226, .07) 48%, transparent 70%),
+        radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, .1), transparent 42%);
+    filter: blur(24px);
+    animation: backgroundPulse 12s ease-in-out infinite alternate;
+}
+
+#background::after {
+    top: auto;
+    bottom: 13%;
+    width: 76%;
+    background: linear-gradient(90deg, transparent, rgba(126, 231, 226, .35), rgba(144, 167, 255, .3), transparent);
+    box-shadow: 0 0 45px rgba(126, 231, 226, .16);
+}
+
+.grid {
+    background-size: 52px 52px;
+    opacity: .32;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .8), transparent 82%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .8), transparent 82%);
+}
+
+.floor {
+    display: none;
+}
+
+#introSplash {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(126, 231, 226, .14), transparent 24%),
+        linear-gradient(135deg, #050810 0%, #0d182b 52%, #061316 100%);
+    transition: opacity .75s ease, visibility .75s ease;
+}
+
+#introSplash::before,
+#introSplash::after {
+    content: "";
+    position: absolute;
+    width: 44vw;
+    height: 44vw;
+    border-radius: 50%;
+    filter: blur(55px);
+    opacity: .34;
+    pointer-events: none;
+}
+
+#introSplash::before {
+    top: -18vw;
+    left: -12vw;
+    background: rgba(144, 167, 255, .28);
+    animation: introDrift 7s ease-in-out infinite alternate;
+}
+
+#introSplash::after {
+    right: -15vw;
+    bottom: -20vw;
+    background: rgba(126, 231, 226, .22);
+    animation: introDrift 9s ease-in-out -2s infinite alternate-reverse;
+}
+
+.intro-mark {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+    animation: introLogoIn 1.35s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.intro-mark img {
+    width: clamp(132px, 20vw, 210px);
+    height: clamp(132px, 20vw, 210px);
+    border: 2px solid rgba(215, 229, 255, .5);
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow:
+        0 0 0 16px rgba(144, 167, 255, .05),
+        0 0 90px rgba(126, 231, 226, .28),
+        0 30px 80px rgba(0, 0, 0, .55);
+}
+
+.intro-mark span {
+    color: rgba(239, 246, 255, .82);
+    font-size: clamp(11px, 1.5vw, 15px);
+    font-weight: 800;
+    letter-spacing: 7px;
+}
+
+#introSplash.intro-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#main.intro-pending {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+#main.intro-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity .85s ease, transform .85s cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes introLogoIn {
+    0% {
+        opacity: 0;
+        transform: scale(.18);
+        filter: blur(14px);
+    }
+    62% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2.35);
+        filter: blur(7px);
+    }
+}
+
+@keyframes introDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(8vw, 5vh, 0) scale(1.12); }
+}
+
+@media (max-width: 520px) {
+    .intro-mark {
+        animation-name: introLogoInMobile;
+    }
+}
+
+@keyframes introLogoInMobile {
+    0% {
+        opacity: 0;
+        transform: scale(.2);
+        filter: blur(14px);
+    }
+    62% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2.2);
+        filter: blur(7px);
+    }
+}
+
+#background {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(177, 199, 255, .16), transparent 34%),
+        radial-gradient(circle at 12% 42%, rgba(126, 231, 226, .17), transparent 26%),
+        radial-gradient(circle at 88% 70%, rgba(255, 212, 121, .1), transparent 24%),
+        linear-gradient(135deg, #050810 0%, #0e1a30 48%, #061417 100%);
+}
+
+#background::before {
+    background:
+        linear-gradient(120deg, transparent 20%, rgba(126, 231, 226, .08) 48%, transparent 72%),
+        radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, .1), transparent 42%);
+    filter: blur(28px);
+    animation: backgroundPulse 12s ease-in-out infinite alternate, introDrift 18s ease-in-out infinite alternate;
+}
+
+#background::after {
+    bottom: 12%;
+    top: auto;
+    width: 72%;
+    background: linear-gradient(90deg, transparent, rgba(126, 231, 226, .28), rgba(144, 167, 255, .24), transparent);
+    box-shadow: 0 0 55px rgba(126, 231, 226, .14);
+}
+
+.ambient-wash {
+    position: absolute;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(34px);
+    opacity: .55;
+}
+
+.ambient-wash.one {
+    top: 8%;
+    left: -15%;
+    width: 82%;
+    height: 28%;
+    transform: rotate(-13deg);
+    background: linear-gradient(105deg, transparent 4%, rgba(126, 231, 226, .13) 38%, rgba(144, 167, 255, .18) 62%, transparent 94%);
+    animation: washFloatOne 15s ease-in-out infinite alternate;
+}
+
+.ambient-wash.two {
+    right: -18%;
+    bottom: 3%;
+    width: 78%;
+    height: 32%;
+    transform: rotate(17deg);
+    background: linear-gradient(105deg, transparent 8%, rgba(255, 212, 121, .08) 42%, rgba(126, 231, 226, .13) 68%, transparent 94%);
+    animation: washFloatTwo 19s ease-in-out infinite alternate;
+}
+
+.ambient-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .32;
+    background-image:
+        radial-gradient(circle at 12% 24%, rgba(255, 255, 255, .7) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 78% 18%, rgba(126, 231, 226, .8) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 62% 76%, rgba(255, 255, 255, .55) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 31% 88%, rgba(144, 167, 255, .8) 0 1px, transparent 1.5px);
+    background-size: 220px 190px, 310px 260px, 270px 230px, 360px 300px;
+    animation: starDrift 28s linear infinite;
+}
+
+.ambient-ribbon {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    width: 74vw;
+    height: 18vh;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 50%;
+    filter: blur(1px);
+    opacity: .62;
+    box-shadow:
+        0 0 24px rgba(255, 255, 255, .06),
+        inset 0 0 22px rgba(255, 255, 255, .035);
+}
+
+.ambient-ribbon.one {
+    top: 16%;
+    left: -18%;
+    transform: rotate(-13deg);
+    animation: ribbonOne 14s ease-in-out infinite alternate;
+}
+
+.ambient-ribbon.two {
+    right: -19%;
+    bottom: 23%;
+    transform: rotate(15deg);
+    animation: ribbonTwo 17s ease-in-out infinite alternate;
+}
+
+.ambient-ribbon.three {
+    top: 48%;
+    left: 14%;
+    width: 58vw;
+    height: 12vh;
+    transform: rotate(3deg);
+    opacity: .34;
+    animation: ribbonThree 20s ease-in-out infinite alternate;
+}
+
+.ambient-scanline {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .2;
+    background: repeating-linear-gradient(180deg, transparent 0 5px, rgba(255, 255, 255, .025) 6px, transparent 7px 13px);
+    mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+}
+
+@keyframes ribbonOne {
+    from { transform: translate3d(-3%, -2%, 0) rotate(-13deg) scale(1); }
+    to { transform: translate3d(11%, 8%, 0) rotate(-8deg) scale(1.08); }
+}
+
+@keyframes ribbonTwo {
+    from { transform: translate3d(5%, 3%, 0) rotate(15deg) scale(1.04); }
+    to { transform: translate3d(-9%, -7%, 0) rotate(9deg) scale(1); }
+}
+
+@keyframes ribbonThree {
+    from { transform: translate3d(0, 0, 0) rotate(3deg); }
+    to { transform: translate3d(5%, -10%, 0) rotate(-2deg); }
+}
+
+@keyframes washFloatOne {
+    from { transform: translate3d(-3%, -2%, 0) rotate(-13deg) scale(1); }
+    to { transform: translate3d(10%, 8%, 0) rotate(-8deg) scale(1.08); }
+}
+
+@keyframes washFloatTwo {
+    from { transform: translate3d(5%, 3%, 0) rotate(17deg) scale(1.04); }
+    to { transform: translate3d(-8%, -7%, 0) rotate(11deg) scale(1); }
+}
+
+@keyframes starDrift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-24px, 18px, 0); }
+}
+
+.orb.one {
+    background: radial-gradient(circle, rgba(126, 231, 226, .14), transparent 70%);
+}
+
+.orb.two {
+    background: radial-gradient(circle, rgba(144, 167, 255, .16), transparent 70%);
+}
+
+ #main {
+    display: block;
+    padding: 48px 28px 72px;
+}
+
+.card {
+    width: min(900px, 100%);
+    margin: 0 auto;
+}
+
+.logo-button {
+    width: clamp(138px, 19vw, 178px);
+    height: clamp(138px, 19vw, 178px);
+    margin-bottom: 24px;
+    border: 2px solid rgba(203, 219, 255, .5);
+    background: rgba(14, 20, 38, .62);
+    box-shadow:
+        0 0 0 12px rgba(144, 167, 255, .045),
+        0 0 70px rgba(126, 231, 226, .2),
+        0 28px 70px rgba(0, 0, 0, .5);
+}
+
+.logo-button:hover {
+    box-shadow:
+        0 0 0 16px rgba(144, 167, 255, .07),
+        0 0 90px rgba(126, 231, 226, .3),
+        0 28px 70px rgba(0, 0, 0, .55);
+}
+
+.brand h1 {
+    font-size: clamp(42px, 7vw, 68px);
+    letter-spacing: 5px;
+    background: linear-gradient(180deg, #fff 8%, #c5d4ff 52%, #7ee7e2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 0 24px rgba(126, 231, 226, .18));
+}
+
+.brand p {
+    margin-top: 10px;
+    color: var(--cyan);
+    font-size: 10px;
+    letter-spacing: 7px;
+}
+
+.announcement {
+    max-width: 600px;
+    margin: 22px auto 0;
+    border-color: rgba(255, 212, 121, .25);
+    background: linear-gradient(100deg, rgba(255, 212, 121, .1), rgba(126, 231, 226, .06));
+}
+
+.description {
+    margin-top: 11px;
+    color: var(--muted);
+}
+
+.status {
+    margin-top: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    background: rgba(10, 42, 52, .48);
+    color: var(--cyan);
+}
+
+    height: 68px;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border-color: var(--line);
+    background: linear-gradient(135deg, rgba(35, 48, 78, .72), rgba(13, 19, 34, .68));
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.link:nth-child(even) {
+    transform: translateY(12px);
+}
+
+.link:nth-child(even):hover {
+    transform: translateY(8px) scale(1.02);
+}
+
+.link:hover {
+    border-color: rgba(126, 231, 226, .58);
+    background: linear-gradient(135deg, rgba(42, 75, 91, .78), rgba(18, 31, 52, .76));
+    box-shadow: 0 18px 34px rgba(0, 0, 0, .34), 0 0 24px rgba(126, 231, 226, .1);
+}
+
+.icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    border-color: rgba(178, 197, 255, .28);
+    background: linear-gradient(145deg, rgba(144, 167, 255, .28), rgba(126, 231, 226, .08));
+    color: var(--ink);
+}
+
+.link-text {
+    font-size: 12px;
+    letter-spacing: .7px;
+}
+
+.link-arrow {
+    color: rgba(126, 231, 226, .55);
+}
+
+.footer {
+    margin-top: 36px;
+    color: rgba(225, 231, 255, .34);
+}
+
+.bit-panel {
+    position: absolute;
+    top: 132px;
+    right: clamp(18px, 5vw, 90px);
+    width: min(310px, 100%);
+}
+
+.bit-panel::before {
+    height: 170px;
+    margin-bottom: 34px;
+    background: linear-gradient(180deg, transparent, rgba(255, 212, 121, .85), rgba(126, 231, 226, .6), transparent);
+}
+
+.bit-mark {
+    background: linear-gradient(145deg, #252c63, #1d244d);
+    color: #b8c0ff;
+    box-shadow: 0 0 34px rgba(144, 167, 255, .27);
+}
+
+.bit-title {
+    color: var(--ink);
+    font-size: clamp(24px, 3vw, 34px);
+}
+
+.bit-qr-frame {
+    width: 268px;
+    padding: 12px;
+    border: 4px solid #9daaff;
+    border-radius: 22px;
+    box-shadow: 0 0 0 8px rgba(144, 167, 255, .06), 0 0 50px rgba(144, 167, 255, .22);
+}
+
+.bit-note {
+    color: var(--muted);
+}
+
+@media (max-width: 820px) {
+    #main {
+        padding: 40px 18px 42px;
+    }
+
+    .links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .bit-panel {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 64px auto 0;
+    }
+
+    .card {
+        width: min(680px, 100%);
+    }
+
+    .bit-panel::before {
+        width: 170px;
+        height: 1px;
+        margin-bottom: 32px;
+        background: linear-gradient(90deg, transparent, rgba(255, 212, 121, .8), rgba(126, 231, 226, .6), transparent);
+    }
+}
+
+@media (max-width: 520px) {
+    #main {
+        padding: 34px 14px 38px;
+    }
+
+    .links {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 821px) and (max-width: 1150px) {
+    .card {
+        width: min(760px, 100%);
+    }
+
+    .bit-panel {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 70px auto 0;
+    }
+}
+
+/* =========================================================
+   REFERENCE-STYLE STACKED LINKS
+========================================================= */
+
+#main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(54px, 9vw, 140px);
+    padding: 48px 24px 64px;
+}
+
+.card {
+    width: min(520px, 100%);
+    margin: 0;
+}
+
+.logo-button {
+    width: clamp(92px, 13vw, 118px);
+    height: clamp(92px, 13vw, 118px);
+    margin-bottom: 18px;
+}
+
+.brand h1 {
+    font-size: clamp(34px, 5vw, 48px);
+    letter-spacing: 3px;
+}
+
+.brand p {
+    font-size: 9px;
+    letter-spacing: 6px;
+}
+
+.announcement {
+    max-width: 520px;
+    margin-top: 18px;
+}
+
+.description {
+    margin-top: 8px;
+}
+
+.status {
+    margin-top: 14px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.link,
+.link:nth-child(even),
+.link:nth-child(even):hover {
+    width: 100%;
+    height: 58px;
+    transform: none;
+}
+
+.link:hover {
+    transform: translateY(-2px) scale(1.01);
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+}
+
+.link-text {
+    font-size: 11px;
+}
+
+.link-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.link-subtext {
+    color: var(--gold);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.footer {
+    margin-top: 24px;
+}
+
+.bit-panel {
+    position: relative;
+    top: 86px;
+    right: auto;
+    flex: 0 0 280px;
+    margin: 0;
+}
+
+@media (max-width: 1150px) {
+    #main {
+        flex-direction: column;
+        align-items: center;
+        gap: 58px;
+    }
+
+    .bit-panel {
+        top: auto;
+        flex-basis: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 520px) {
+    #main {
+        padding: 34px 14px 44px;
+    }
+}
+
+/* =========================================================
+   LUXURY MONOCHROME PALETTE
+========================================================= */
+
+:root {
+    --ink: #ffffff;
+    --muted: rgba(255, 255, 255, .52);
+    --line: rgba(255, 255, 255, .2);
+    --panel: rgba(255, 255, 255, .06);
+    --cyan: #f3f3f3;
+    --blue: #d5d5d5;
+    --gold: #f2f2f2;
+}
+
+.brand h1 {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f2f2 42%, #8f8f8f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, .2));
+}
+
+.announcement {
+    direction: rtl;
+    font-family: "Heebo", sans-serif;
+    font-weight: 600;
+}
+
+body {
+    background: #050505;
+}
+
+#background,
+#introSplash {
+    background:
+        radial-gradient(ellipse at 50% 10%, rgba(255, 255, 255, .12), transparent 32%),
+        radial-gradient(ellipse at 15% 70%, rgba(255, 255, 255, .055), transparent 26%),
+        radial-gradient(ellipse at 90% 42%, rgba(255, 255, 255, .04), transparent 24%),
+        linear-gradient(135deg, #030303 0%, #111111 50%, #050505 100%);
+}
+
+#background::before,
+#introSplash::before {
+    background:
+        linear-gradient(120deg, transparent 18%, rgba(255, 255, 255, .055) 48%, transparent 76%),
+        radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, .08), transparent 42%);
+    filter: blur(30px);
+}
+
+#background::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .22), transparent);
+    box-shadow: 0 0 55px rgba(255, 255, 255, .1);
+}
+
+.ambient-wash.one {
+    background: linear-gradient(105deg, transparent 4%, rgba(255, 255, 255, .08) 40%, rgba(255, 255, 255, .03) 66%, transparent 94%);
+}
+
+.ambient-wash.two {
+    background: linear-gradient(105deg, transparent 8%, rgba(255, 255, 255, .045) 42%, rgba(255, 255, 255, .075) 68%, transparent 94%);
+}
+
+.ambient-stars {
+    opacity: .24;
+    filter: grayscale(1);
+}
+
+.site-tab-button,
+.link,
+.emoji-item {
+    border-color: rgba(255, 255, 255, .18);
+    background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .035));
+}
+
+.site-tab-button:hover,
+.site-tab-button.active,
+.link:hover,
+.emoji-item:hover {
+    border-color: rgba(255, 255, 255, .62);
+    background: linear-gradient(135deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .055));
+    box-shadow: 0 0 24px rgba(255, 255, 255, .08);
+}
+
+.icon {
+    border-color: rgba(255, 255, 255, .22);
+    background: linear-gradient(145deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .045));
+}
+
+.status,
+.announcement {
+    border-color: rgba(255, 255, 255, .2);
+    background: rgba(255, 255, 255, .055);
+}
+
+.status,
+.schedule-message,
+.schedule-card-label,
+.link-subtext,
+.schedule-link {
+    color: #f2f2f2;
+}
+
+.schedule-card,
+.schedule-empty,
+.emoji-item {
+    border-color: rgba(255, 255, 255, .18);
+    background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .035));
+}
+
+.stream-card {
+    background: #202020;
+}
+
+.stream-thumb {
+    background: linear-gradient(160deg, #777777, #292929 70%, #111111);
+}
+
+.stream-time,
+.schedule-link:hover {
+    color: #d8d8d8;
+}
+
+.bit-mark {
+    background: linear-gradient(145deg, #303030, #111111);
+    color: #ffffff;
+    box-shadow: 0 0 34px rgba(255, 255, 255, .16);
+}
+
+.bit-qr-frame {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, .05), 0 0 50px rgba(255, 255, 255, .16);
+}
+
+/* Richer monochrome atmosphere */
+#background {
+    background:
+        radial-gradient(ellipse at 50% 17%, rgba(255, 255, 255, .055), transparent 24%),
+        radial-gradient(ellipse at 8% 38%, rgba(255, 255, 255, .09), transparent 25%),
+        radial-gradient(ellipse at 92% 58%, rgba(255, 255, 255, .08), transparent 26%),
+        radial-gradient(ellipse at 52% 100%, rgba(255, 255, 255, .1), transparent 38%),
+        linear-gradient(135deg, #020202 0%, #151515 48%, #050505 100%);
+}
+
+#background::before {
+    background:
+        linear-gradient(116deg, transparent 10%, rgba(255, 255, 255, .09) 38%, transparent 62%),
+        linear-gradient(64deg, transparent 28%, rgba(255, 255, 255, .055) 52%, transparent 76%),
+        radial-gradient(ellipse at 50% 25%, rgba(255, 255, 255, .14), transparent 43%);
+    filter: blur(46px);
+    opacity: .42;
+}
+
+.grid {
+    opacity: .48;
+    background-size: 44px 44px;
+}
+
+.ambient-wash {
+    opacity: .48;
+    filter: blur(58px);
+}
+
+.ambient-wash.one {
+    top: 18%;
+    left: -22%;
+    width: 115%;
+    height: 30%;
+    background: linear-gradient(105deg, transparent 3%, rgba(255, 255, 255, .12) 34%, rgba(255, 255, 255, .045) 55%, transparent 92%);
+}
+
+.ambient-wash.two {
+    right: -28%;
+    bottom: 14%;
+    width: 120%;
+    height: 30%;
+    background: linear-gradient(105deg, transparent 8%, rgba(255, 255, 255, .055) 38%, rgba(255, 255, 255, .1) 68%, transparent 96%);
+}
+
+.ambient-wash.one::after,
+.ambient-wash.two::after {
+    content: "";
+    position: absolute;
+    inset: 35% 5%;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    border-bottom: 1px solid rgba(255, 255, 255, .05);
+    filter: blur(1px);
+}
+
+.ambient-wash.one::after {
+    transform: rotate(7deg);
+}
+
+.ambient-wash.two::after {
+    transform: rotate(-9deg);
+}
+
+.ambient-stars {
+    opacity: .42;
+    background-size: 145px 125px, 205px 175px, 180px 155px, 260px 220px;
+}
+
+.particle {
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 255, 255, .72);
+    box-shadow: 0 0 10px rgba(255, 255, 255, .48);
+}
+
+.ambient-lattice {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    opacity: .32;
+    background:
+        repeating-linear-gradient(118deg, transparent 0 115px, rgba(255, 255, 255, .055) 116px, transparent 117px 230px),
+        repeating-linear-gradient(62deg, transparent 0 170px, rgba(255, 255, 255, .035) 171px, transparent 172px 340px);
+    mask-image: radial-gradient(ellipse at center, black 0%, rgba(0, 0, 0, .72) 46%, transparent 82%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, rgba(0, 0, 0, .72) 46%, transparent 82%);
+    animation: latticeDrift 28s linear infinite;
+}
+
+.background-wordmark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 0 4vw;
+    pointer-events: none;
+    overflow: hidden;
+    color: transparent;
+    font-size: clamp(86px, 18vw, 300px);
+    font-weight: 900;
+    letter-spacing: .07em;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+    -webkit-text-stroke: 2px rgba(255, 255, 255, .16);
+    text-shadow: 0 0 34px rgba(255, 255, 255, .08);
+    opacity: .95;
+    transform: translateX(.08em);
+    animation: wordmarkPulse 8s ease-in-out infinite;
+    mask-image: linear-gradient(180deg, transparent 5%, black 36%, black 64%, transparent 96%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 5%, black 36%, black 64%, transparent 96%);
+}
+
+@keyframes latticeDrift {
+    from { transform: translate3d(-2%, -1%, 0); }
+    to { transform: translate3d(2%, 1%, 0); }
+}
+
+@keyframes wordmarkPulse {
+    0%, 100% {
+        opacity: .68;
+        transform: translateX(0) scale(.985);
+        letter-spacing: .07em;
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(0) scale(1.015);
+        letter-spacing: .085em;
+    }
+}
+
+@media (max-width: 520px) {
+    .background-wordmark {
+        padding: 0 6vw;
+        font-size: 18vw;
+        letter-spacing: .035em;
+        -webkit-text-stroke: 1px rgba(255, 255, 255, .16);
+    }
+}
+
+@media (hover: hover) {
+    .link,
+    .site-tab-button,
+    .emoji-item,
+    .logo-button {
+        will-change: transform;
+    }
+
+    .link:hover {
+        transform: translateY(-5px) scale(1.025);
+        box-shadow:
+            0 18px 34px rgba(0, 0, 0, .5),
+            0 0 30px rgba(255, 255, 255, .12),
+            inset 0 1px 0 rgba(255, 255, 255, .3);
+    }
+
+    .site-tab-button:hover {
+        transform: translateY(-3px) scale(1.035);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, .35), 0 0 24px rgba(255, 255, 255, .12);
+    }
+
+    .site-tab-button.active {
+        transform: translateY(-1px);
+    }
+
+    .emoji-item:hover {
+        transform: translateY(-6px) scale(1.025);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, .4), 0 0 28px rgba(255, 255, 255, .12);
+    }
+}
+
+.link:focus-visible,
+.site-tab-button:focus-visible,
+.logo-button:focus-visible,
+.emoji-item:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+}
+
+@media (hover: hover) {
+    .links > .link:hover {
+        transform: translateY(-7px) scale(1.035) !important;
+        border-color: rgba(255, 255, 255, .75) !important;
+        box-shadow:
+            0 22px 42px rgba(0, 0, 0, .62),
+            0 0 34px rgba(255, 255, 255, .17),
+            inset 0 1px 0 rgba(255, 255, 255, .36) !important;
+    }
+
+    .links > .link:hover .icon {
+        transform: scale(1.08);
+        background: linear-gradient(145deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, .08));
+    }
+}
+
+.links > .link .icon {
+    transition: transform .25s ease, background .25s ease;
+}
+
 </style>
 
 </head>
@@ -1631,6 +2975,24 @@ body {
 
     <div class="orb three"></div>
 
+    <div class="ambient-wash one"></div>
+
+    <div class="ambient-wash two"></div>
+
+    <div class="ambient-stars"></div>
+
+    <div class="ambient-lattice"></div>
+
+    <div class="background-wordmark" aria-hidden="true">SENSEI</div>
+
+    <div class="ambient-ribbon one"></div>
+
+    <div class="ambient-ribbon two"></div>
+
+    <div class="ambient-ribbon three"></div>
+
+    <div class="ambient-scanline"></div>
+
 </div>
 
 
@@ -1640,48 +3002,31 @@ body {
 
 <div id="mouseLight"></div>
 
-
-<!-- =====================================================
-     INTRO
-===================================================== -->
-
-<section id="intro">
-
-    <div class="intro-content">
-
-        <div class="intro-small">
-            WELCOME TO
-        </div>
-
-        <div class="intro-title">
-            SENSEI
-        </div>
-
-        <div class="intro-subtitle">
-            OFFICIAL LINKS
-        </div>
-
-        <button
-            class="enter-button"
-            id="enterButton"
-        >
-            ENTER
-        </button>
-
+<div id="introSplash" aria-hidden="true">
+    <div class="intro-mark">
+        <img src="logo.png" alt="Sensei FR">
+        <span>SENSEI FR</span>
     </div>
-
-</section>
+</div>
 
 
 <!-- =====================================================
      MAIN
 ===================================================== -->
 
-<main id="main">
+<main id="main" class="intro-pending">
+
+    <nav class="site-tabs" aria-label="ניווט באתר">
+        <button class="site-tab-button active" type="button" data-site-tab="links">LINKS</button>
+        <button class="site-tab-button" type="button" data-site-tab="bit">BIT</button>
+        <button class="site-tab-button" type="button" data-site-tab="schedule">SCHEDULE</button>
+        <button class="site-tab-button" type="button" data-site-tab="emojis">EMOTES</button>
+    </nav>
 
     <div
-        class="card"
+        class="card site-tab-panel active"
         id="card"
+        data-site-panel="links"
     >
 
 
@@ -1805,6 +3150,34 @@ body {
 
                 <div class="link-text">
                     Kick
+                </div>
+
+                <div class="link-arrow">
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </div>
+
+            </a>
+
+
+            <!-- SCHEDULE -->
+
+            <a
+                class="link"
+                href="https://kick.com/sensei_fr/schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="icon">
+
+                    <i class="fa-regular fa-calendar-days"></i>
+
+                </div>
+
+                <div class="link-text">
+                    לוח שידורים
                 </div>
 
                 <div class="link-arrow">
@@ -1943,8 +3316,9 @@ body {
 
                 </div>
 
-                <div class="link-text">
-                    S מחשבים • Code SENSEI
+                <div class="link-text link-copy">
+                    <span>S מחשבים</span>
+                    <span class="link-subtext">5% הנחה עם קוד SENSEI</span>
                 </div>
 
                 <div class="link-arrow">
@@ -1970,6 +3344,57 @@ body {
 
     </div>
 
+    <aside class="bit-panel site-tab-panel" aria-label="תשלום ב-Bit" data-site-panel="bit">
+
+        <div class="bit-mark" aria-hidden="true">bit</div>
+
+        <h2 class="bit-title">תשלום ליאיר חגי גביעון</h2>
+
+        <div class="bit-qr-frame">
+            <img
+                class="bit-qr"
+                src="bit-qr.png"
+                alt="סריקת QR לתשלום ב-Bit"
+            >
+        </div>
+
+        <p class="bit-note">סרקו את הקוד לתשלום מהיר</p>
+
+    </aside>
+
+    <section class="schedule-panel site-tab-panel" aria-labelledby="scheduleTitle" data-site-panel="schedule">
+
+        <h2 class="schedule-title" id="scheduleTitle">לוח שידורים</h2>
+
+        <p class="schedule-message" id="scheduleMessage">
+            בודק את השידורים של השבוע...
+        </p>
+
+        <div class="schedule-board" id="scheduleBoard"></div>
+
+        <a class="schedule-link" href="https://kick.com/sensei_fr/schedule" target="_blank" rel="noopener noreferrer">
+            לפתיחת לוח השידורים המלא
+        </a>
+
+    </section>
+
+    <section class="emoji-panel site-tab-panel" aria-labelledby="emojiTitle" data-site-panel="emojis">
+
+        <h2 class="emoji-title" id="emojiTitle">*האימוטים של סנסי *רק לסאבים</h2>
+
+        <div class="emoji-grid">
+            <div class="emoji-item"><img src="emojis/sensei.png" alt="Sensei emote"></div>
+            <div class="emoji-item"><img src="emojis/sensei2.png" alt="Sensei emote 2"></div>            
+            <div class="emoji-item"><img src="emojis/sensei3.png" alt="Sensei emote 3"></div>
+            <div class="emoji-item"><img src="emojis/sensei4.png" alt="Sensei emote 4"></div>
+            <div class="emoji-item"><img src="emojis/sensei5.png" alt="Sensei emote 5"></div>
+            <div class="emoji-item"><img src="emojis/sensei6.png" alt="Sensei emote 6"></div>
+            <div class="emoji-item"><img src="emojis/sensei7.png" alt="Sensei emote 7"></div>
+            <div class="emoji-item"><img src="emojis/sensei8.png" alt="Sensei emote 8"></div>
+        </div>
+
+    </section>
+
 </main>
 
 
@@ -1979,17 +3404,8 @@ body {
    ELEMENTS
 ========================================================= */
 
-const intro =
-    document.getElementById("intro");
-
 const main =
     document.getElementById("main");
-
-const enterButton =
-    document.getElementById("enterButton");
-
-const card =
-    document.getElementById("card");
 
 const mouseLight =
     document.getElementById("mouseLight");
@@ -2003,28 +3419,182 @@ const statusDot =
 const logoButton =
     document.getElementById("logoButton");
 
+const siteTabButtons =
+    document.querySelectorAll(".site-tab-button");
+
+const siteTabPanels =
+    document.querySelectorAll(".site-tab-panel");
+
+const scheduleMessage =
+    document.getElementById("scheduleMessage");
+
+const scheduleBoard =
+    document.getElementById("scheduleBoard");
+
+const introSplash =
+    document.getElementById("introSplash");
+
 
 /* =========================================================
-   ENTER
+   SITE TABS
 ========================================================= */
 
-enterButton.addEventListener(
-    "click",
-    () => {
+function applySiteTab(selectedTab) {
+    const validTab = ["links", "bit", "schedule", "emojis"].includes(selectedTab)
+        ? selectedTab
+        : "links";
 
-        intro.classList.add("hidden");
+    siteTabButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.siteTab === validTab);
+    });
 
-        setTimeout(
-            () => {
+    siteTabPanels.forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.sitePanel === validTab);
+    });
+}
 
-                main.classList.add("show");
+siteTabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const selectedTab = button.dataset.siteTab;
+        window.location.hash = selectedTab;
+        applySiteTab(selectedTab);
+    });
+});
 
-            },
-            180
-        );
+window.addEventListener("hashchange", () => {
+    applySiteTab(window.location.hash.slice(1));
+});
 
+applySiteTab(window.location.hash.slice(1) || "links");
+
+window.setTimeout(() => {
+    if (!introSplash) return;
+
+    introSplash.classList.add("intro-hidden");
+    main.classList.remove("intro-pending");
+    main.classList.add("intro-visible");
+
+    window.setTimeout(() => {
+        introSplash.remove();
+    }, 800);
+}, 1550);
+
+
+/* =========================================================
+   SCHEDULE STATUS
+========================================================= */
+
+let scheduledStreams = [
+    {
+        date: "2026-09-25T18:00:00",
+        title: "לייב",
+        time: "06:00 PM (6 hr)",
+        category: "JUST CHATTING"
     }
-);
+];
+
+let noStreamDays = ["2026-09-22"];
+
+function getCurrentWeekBounds() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - start.getDay());
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 7);
+    return { start, end };
+}
+
+function getNextLive() {
+    const now = new Date();
+    return scheduledStreams
+        .map((stream) => ({ ...stream, date: new Date(stream.date) }))
+        .filter((stream) => stream.date > now)
+        .sort((a, b) => a.date - b.date)[0] || null;
+}
+
+function renderScheduleBoard() {
+    if (!scheduleBoard) return;
+
+    const { start, end } = getCurrentWeekBounds();
+    const streamsThisWeek = scheduledStreams
+        .map((stream) => ({ ...stream, date: new Date(stream.date) }))
+        .filter((stream) => stream.date >= start && stream.date < end);
+    const emptyDaysThisWeek = noStreamDays
+        .map((date) => new Date(date + "T12:00:00"))
+        .filter((date) => date >= start && date < end);
+
+    const dayCards = emptyDaysThisWeek.map((date) => `
+        <div class="schedule-day">
+            <h3 class="schedule-day-title">${date.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" })}</h3>
+            <div class="schedule-empty">
+                <img src="emojis/sensei3.png" alt="Sensei">
+                <span>No scheduled stream</span>
+            </div>
+        </div>`);
+
+    streamsThisWeek.forEach((stream) => {
+        dayCards.push(`
+            <div class="schedule-day">
+                <h3 class="schedule-day-title">${stream.date.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" })}</h3>
+                <div class="stream-card">
+                    <div class="stream-thumb">
+                        <img src="emojis/sensei6.png" alt="Sensei live">
+                    </div>
+                    <div class="stream-info">
+                        <span class="stream-name">${stream.title}</span>
+                        <span class="stream-time">${stream.time}</span>
+                    </div>
+                </div>
+            </div>`);
+    });
+
+    scheduleBoard.innerHTML = dayCards.length > 0
+        ? dayCards.join("")
+        : '<div class="schedule-empty">אין לייבים מתוכננים השבוע</div>';
+}
+
+function renderSchedule(data) {
+    const nextLive = getNextLive();
+    const isLive = !!(data && data.live === true);
+
+    if (isLive) {
+        scheduleMessage.textContent = "סנסיי ברח מצה״ל ויש לייב עכשיו 🔥";
+    } else if (nextLive) {
+        scheduleMessage.textContent = "יש לייבים השבוע";
+    } else {
+        scheduleMessage.textContent = "השבוע סנסיי משרת בצה״ל אז אין לייבים";
+    }
+
+    renderScheduleBoard();
+}
+
+async function updateScheduleMessage() {
+    if (!scheduleMessage) return;
+
+    try {
+        const [statusResponse, scheduleResponse] = await Promise.all([
+            fetch("kick-status.json?t=" + Date.now(), { cache: "no-store" }),
+            fetch("schedule.json?t=" + Date.now(), { cache: "no-store" })
+        ]);
+
+        if (!statusResponse.ok) throw new Error("Status file unavailable");
+
+        const data = await statusResponse.json();
+        if (scheduleResponse.ok) {
+            const schedule = await scheduleResponse.json();
+            if (Array.isArray(schedule.streams)) scheduledStreams = schedule.streams;
+            if (Array.isArray(schedule.emptyDays)) noStreamDays = schedule.emptyDays;
+        }
+
+        renderSchedule(data);
+    } catch {
+        renderSchedule({ live: false });
+    }
+}
+
+updateScheduleMessage();
+setInterval(updateScheduleMessage, 30000);
 
 
 /* =========================================================
@@ -2040,66 +3610,6 @@ document.addEventListener(
 
         mouseLight.style.top =
             event.clientY + "px";
-
-    }
-);
-
-
-/* =========================================================
-   CARD 3D EFFECT
-========================================================= */
-
-document.addEventListener(
-    "mousemove",
-    (event) => {
-
-        if (
-            !main.classList.contains("show")
-        ) {
-            return;
-        }
-
-        const rect =
-            card.getBoundingClientRect();
-
-        const x =
-            event.clientX -
-            rect.left -
-            rect.width / 2;
-
-        const y =
-            event.clientY -
-            rect.top -
-            rect.height / 2;
-
-        const rotateX =
-            -(y / rect.height) * 4;
-
-        const rotateY =
-            (x / rect.width) * 4;
-
-        card.style.transform =
-            `
-            perspective(1000px)
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            translateY(-2px)
-            `;
-
-    }
-);
-
-
-/* =========================================================
-   RESET CARD
-========================================================= */
-
-document.addEventListener(
-    "mouseleave",
-    () => {
-
-        card.style.transform =
-            "perspective(1000px) rotateX(0deg) rotateY(0deg)";
 
     }
 );
@@ -2266,7 +3776,7 @@ function createParticle() {
         Math.random() * 100 + "%";
 
     particle.style.top =
-        (70 + Math.random() * 30) + "%";
+        Math.random() * 100 + "%";
 
     particle.style.animationDuration =
         (8 + Math.random() * 14) + "s";
@@ -2290,11 +3800,11 @@ function createParticle() {
 }
 
 
-/* Create 35 particles */
+/* Create 80 particles */
 
 for (
     let i = 0;
-    i < 35;
+    i < 80;
     i++
 ) {
 
