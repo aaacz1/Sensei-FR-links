@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Sensei FR • Official Links</title>
@@ -9,10 +11,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+>
 
 <style>
 
@@ -53,12 +60,12 @@ body {
     background:
         radial-gradient(
             circle at 50% 35%,
-            rgba(255,255,255,0.085),
+            rgba(255,255,255,.085),
             transparent 25%
         ),
         radial-gradient(
             circle at 50% 100%,
-            rgba(255,255,255,0.045),
+            rgba(255,255,255,.045),
             transparent 35%
         ),
         linear-gradient(
@@ -69,40 +76,42 @@ body {
         );
 }
 
-
-/* Main glow */
-
 #background::before {
     content: "";
+
     position: absolute;
     inset: -20%;
 
     background:
         radial-gradient(
             ellipse at 50% 30%,
-            rgba(255,255,255,0.11),
+            rgba(255,255,255,.11),
             transparent 27%
         ),
         radial-gradient(
             ellipse at 15% 75%,
-            rgba(255,255,255,0.035),
+            rgba(255,255,255,.035),
             transparent 25%
         ),
         radial-gradient(
             ellipse at 85% 70%,
-            rgba(255,255,255,0.035),
+            rgba(255,255,255,.035),
             transparent 25%
         );
 
     filter: blur(35px);
-    animation: backgroundPulse 8s ease-in-out infinite alternate;
+
+    animation:
+        backgroundPulse
+        8s
+        ease-in-out
+        infinite
+        alternate;
 }
-
-
-/* Horizon light */
 
 #background::after {
     content: "";
+
     position: absolute;
 
     left: 50%;
@@ -113,36 +122,39 @@ body {
 
     transform: translateX(-50%);
 
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,0.18),
-        transparent
-    );
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.18),
+            transparent
+        );
 
     box-shadow:
-        0 0 25px rgba(255,255,255,0.12),
-        0 0 70px rgba(255,255,255,0.05);
+        0 0 25px rgba(255,255,255,.12),
+        0 0 70px rgba(255,255,255,.05);
 }
 
 
 /* =========================================================
-   FLOATING LIGHTS
+   BACKGROUND ORBS
 ========================================================= */
 
 .orb {
     position: absolute;
+
     border-radius: 50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(255,255,255,0.12),
-            rgba(255,255,255,0.025) 35%,
+            rgba(255,255,255,.12),
+            rgba(255,255,255,.025) 35%,
             transparent 70%
         );
 
     filter: blur(5px);
+
     pointer-events: none;
 }
 
@@ -153,7 +165,12 @@ body {
     left: -170px;
     top: 10%;
 
-    animation: orbOne 14s ease-in-out infinite alternate;
+    animation:
+        orbOne
+        14s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 .orb.two {
@@ -163,7 +180,12 @@ body {
     right: -130px;
     top: 8%;
 
-    animation: orbTwo 17s ease-in-out infinite alternate;
+    animation:
+        orbTwo
+        17s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 .orb.three {
@@ -180,7 +202,7 @@ body {
 
 
 /* =========================================================
-   GRID
+   BACKGROUND GRID
 ========================================================= */
 
 .grid {
@@ -189,12 +211,12 @@ body {
 
     background-image:
         linear-gradient(
-            rgba(255,255,255,0.018) 1px,
+            rgba(255,255,255,.018) 1px,
             transparent 1px
         ),
         linear-gradient(
             90deg,
-            rgba(255,255,255,0.018) 1px,
+            rgba(255,255,255,.018) 1px,
             transparent 1px
         );
 
@@ -219,7 +241,7 @@ body {
 
 
 /* =========================================================
-   3D FLOOR
+   FLOOR
 ========================================================= */
 
 .floor {
@@ -239,17 +261,16 @@ body {
 
     background-image:
         linear-gradient(
-            rgba(255,255,255,0.035) 1px,
+            rgba(255,255,255,.035) 1px,
             transparent 1px
         ),
         linear-gradient(
             90deg,
-            rgba(255,255,255,0.035) 1px,
+            rgba(255,255,255,.035) 1px,
             transparent 1px
         );
 
-    background-size:
-        65px 65px;
+    background-size: 65px 65px;
 
     mask-image:
         linear-gradient(
@@ -270,7 +291,7 @@ body {
 
 
 /* =========================================================
-   VIGNETTE
+   VIGNETTE / NOISE
 ========================================================= */
 
 .vignette {
@@ -290,11 +311,6 @@ body {
         );
 }
 
-
-/* =========================================================
-   NOISE
-========================================================= */
-
 .noise {
     position: fixed;
     inset: 0;
@@ -306,7 +322,7 @@ body {
     opacity: .035;
 
     background-image:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
 }
 
 
@@ -327,7 +343,8 @@ body {
 
     pointer-events: none;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
     background:
         radial-gradient(
@@ -396,11 +413,20 @@ body {
 
     margin-bottom: 18px;
 
-    animation: fadeUp .8s ease both;
+    animation:
+        fadeUp
+        .8s
+        ease
+        both;
 }
 
 .intro-title {
-    font-size: clamp(58px, 12vw, 110px);
+    font-size:
+        clamp(
+            58px,
+            12vw,
+            110px
+        );
 
     line-height: .9;
 
@@ -423,10 +449,16 @@ body {
     color: transparent;
 
     filter:
-        drop-shadow(0 0 30px rgba(255,255,255,.1));
+        drop-shadow(
+            0 0 30px
+            rgba(255,255,255,.1)
+        );
 
     animation:
-        introTitle .9s cubic-bezier(.2,.8,.2,1) both;
+        introTitle
+        .9s
+        cubic-bezier(.2,.8,.2,1)
+        both;
 }
 
 .intro-subtitle {
@@ -439,21 +471,29 @@ body {
     color: rgba(255,255,255,.42);
 
     animation:
-        fadeUp 1s .2s ease both;
+        fadeUp
+        1s
+        .2s
+        ease
+        both;
 }
 
 
-/* ENTER BUTTON */
+/* =========================================================
+   ENTER BUTTON
+========================================================= */
 
 .enter-button {
     position: relative;
 
     margin-top: 42px;
 
-    width: 190px;
-    height: 55px;
+    width: 210px;
+    height: 60px;
 
-    border: 1px solid rgba(255,255,255,.28);
+    border:
+        1px solid
+        rgba(255,255,255,.28);
 
     border-radius: 100px;
 
@@ -468,7 +508,7 @@ body {
 
     font-family: inherit;
 
-    font-size: 11px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -493,7 +533,11 @@ body {
         box-shadow .3s ease;
 
     animation:
-        fadeUp 1s .4s ease both;
+        fadeUp
+        1s
+        .4s
+        ease
+        both;
 }
 
 .enter-button::before {
@@ -525,7 +569,9 @@ body {
 }
 
 .enter-button:hover {
-    transform: translateY(-4px) scale(1.035);
+    transform:
+        translateY(-4px)
+        scale(1.035);
 
     background:
         linear-gradient(
@@ -534,7 +580,8 @@ body {
             rgba(255,255,255,.07)
         );
 
-    border-color: rgba(255,255,255,.5);
+    border-color:
+        rgba(255,255,255,.5);
 
     box-shadow:
         0 20px 55px rgba(0,0,0,.6),
@@ -554,10 +601,11 @@ body {
     z-index: 10;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    padding: 20px;
+    padding: 10px;
 
     opacity: 0;
 
@@ -586,17 +634,34 @@ body {
 .card {
     position: relative;
 
-    width: min(480px, 100%);
+    width:
+        min(
+            520px,
+            100%
+        );
 
-    max-height: calc(100vh - 40px);
+    /*
+       Automatically scales down slightly on short screens
+       so everything remains visible.
+    */
+    height:
+        min(
+            calc(100vh - 20px),
+            820px
+        );
 
-    padding: 30px 26px 21px;
+    padding:
+        clamp(18px, 3vh, 30px)
+        clamp(18px, 3vw, 28px)
+        clamp(14px, 2vh, 20px);
 
     overflow: hidden;
 
     border-radius: 30px;
 
-    border: 1px solid rgba(255,255,255,.24);
+    border:
+        1px solid
+        rgba(255,255,255,.24);
 
     background:
         linear-gradient(
@@ -607,14 +672,18 @@ body {
             rgba(255,255,255,.075) 100%
         );
 
-    backdrop-filter: blur(35px) saturate(130%);
-    -webkit-backdrop-filter: blur(35px) saturate(130%);
+    backdrop-filter:
+        blur(35px)
+        saturate(130%);
+
+    -webkit-backdrop-filter:
+        blur(35px)
+        saturate(130%);
 
     box-shadow:
         0 40px 120px rgba(0,0,0,.88),
         0 0 80px rgba(255,255,255,.055),
         0 0 30px rgba(255,255,255,.025),
-
         inset 0 1px 0 rgba(255,255,255,.35),
         inset 0 -1px 0 rgba(255,255,255,.05);
 
@@ -626,14 +695,10 @@ body {
         box-shadow .3s ease;
 }
 
-
-/* Top shine */
-
 .card::before {
     content: "";
 
     position: absolute;
-
     inset: 1px;
 
     border-radius: 29px;
@@ -654,9 +719,6 @@ body {
 
     z-index: 0;
 }
-
-
-/* Outer glow */
 
 .card::after {
     content: "";
@@ -687,9 +749,6 @@ body {
     z-index: 0;
 }
 
-
-/* Keep content above effects */
-
 .card > * {
     position: relative;
     z-index: 2;
@@ -701,10 +760,23 @@ body {
 ========================================================= */
 
 .logo-button {
-    width: 92px;
-    height: 92px;
+    width:
+        clamp(
+            76px,
+            11vh,
+            96px
+        );
 
-    margin: 0 auto 17px;
+    height:
+        clamp(
+            76px,
+            11vh,
+            96px
+        );
+
+    margin:
+        0 auto
+        clamp(10px, 1.8vh, 17px);
 
     padding: 0;
 
@@ -712,7 +784,9 @@ body {
 
     border-radius: 50%;
 
-    border: 1px solid rgba(255,255,255,.24);
+    border:
+        1px solid
+        rgba(255,255,255,.24);
 
     background:
         linear-gradient(
@@ -742,7 +816,8 @@ body {
         scale(1.05)
         rotate(2deg);
 
-    border-color: rgba(255,255,255,.5);
+    border-color:
+        rgba(255,255,255,.5);
 
     box-shadow:
         0 20px 55px rgba(0,0,0,.65),
@@ -769,7 +844,12 @@ body {
 }
 
 .brand h1 {
-    font-size: clamp(30px, 7vw, 42px);
+    font-size:
+        clamp(
+            30px,
+            6vh,
+            44px
+        );
 
     font-weight: 900;
 
@@ -780,8 +860,8 @@ body {
     background:
         linear-gradient(
             180deg,
-            #ffffff 0%,
-            #ffffff 32%,
+            #fff 0%,
+            #fff 32%,
             #d9d9d9 62%,
             #8a8a8a 100%
         );
@@ -792,19 +872,23 @@ body {
     color: transparent;
 
     filter:
-        drop-shadow(0 0 15px rgba(255,255,255,.12));
+        drop-shadow(
+            0 0 15px
+            rgba(255,255,255,.12)
+        );
 }
 
 .brand p {
-    margin-top: 7px;
+    margin-top: 5px;
 
-    font-size: 9px;
+    font-size: 8px;
 
     font-weight: 700;
 
     letter-spacing: 5px;
 
-    color: rgba(255,255,255,.4);
+    color:
+        rgba(255,255,255,.4);
 }
 
 
@@ -813,15 +897,24 @@ body {
 ========================================================= */
 
 .announcement {
-    margin-top: 17px;
+    margin-top:
+        clamp(
+            10px,
+            1.7vh,
+            16px
+        );
 
-    padding: 11px 14px;
+    padding:
+        clamp(8px, 1.4vh, 11px)
+        14px;
 
     text-align: center;
 
-    border-radius: 14px;
+    border:
+        1px solid
+        rgba(255,255,255,.13);
 
-    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 13px;
 
     background:
         linear-gradient(
@@ -830,12 +923,14 @@ body {
             rgba(255,255,255,.035)
         );
 
-    color: rgba(255,255,255,.78);
+    color:
+        rgba(255,255,255,.78);
 
     font-size: 11px;
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.08);
+        inset 0 1px 0
+        rgba(255,255,255,.08);
 }
 
 
@@ -844,11 +939,12 @@ body {
 ========================================================= */
 
 .description {
-    margin-top: 10px;
+    margin-top: 8px;
 
     text-align: center;
 
-    color: rgba(255,255,255,.38);
+    color:
+        rgba(255,255,255,.38);
 
     font-size: 9px;
 
@@ -861,7 +957,10 @@ body {
 ========================================================= */
 
 .status {
-    margin: 15px auto 17px;
+    margin:
+        clamp(9px, 1.5vh, 14px)
+        auto
+        clamp(10px, 1.6vh, 15px);
 
     width: fit-content;
 
@@ -871,16 +970,20 @@ body {
 
     gap: 8px;
 
-    padding: 7px 13px;
+    padding:
+        6px 13px;
 
     border-radius: 100px;
 
-    border: 1px solid rgba(255,255,255,.16);
+    border:
+        1px solid
+        rgba(255,255,255,.16);
 
     background:
         rgba(255,255,255,.065);
 
-    color: rgba(255,255,255,.72);
+    color:
+        rgba(255,255,255,.72);
 
     font-size: 9px;
 
@@ -889,7 +992,8 @@ body {
     letter-spacing: 2px;
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.1);
+        inset 0 1px 0
+        rgba(255,255,255,.1);
 }
 
 .status-dot {
@@ -914,7 +1018,12 @@ body {
 
     flex-direction: column;
 
-    gap: 9px;
+    gap:
+        clamp(
+            5px,
+            .9vh,
+            8px
+        );
 }
 
 .link {
@@ -926,17 +1035,30 @@ body {
 
     width: 100%;
 
-    min-height: 54px;
+    height:
+        clamp(
+            48px,
+            6.5vh,
+            56px
+        );
 
-    padding: 6px 9px 6px 13px;
+    min-height: 0;
+
+    padding:
+        5px
+        10px
+        5px
+        13px;
 
     text-decoration: none;
 
     color: #fff;
 
-    border-radius: 16px;
+    border:
+        1px solid
+        rgba(255,255,255,.13);
 
-    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 16px;
 
     background:
         linear-gradient(
@@ -947,8 +1069,10 @@ body {
 
     box-shadow:
         0 8px 22px rgba(0,0,0,.38),
-        inset 0 1px 0 rgba(255,255,255,.1),
-        inset 0 -1px 0 rgba(255,255,255,.025);
+        inset 0 1px 0
+        rgba(255,255,255,.1),
+        inset 0 -1px 0
+        rgba(255,255,255,.025);
 
     overflow: hidden;
 
@@ -989,10 +1113,11 @@ body {
 
 .link:hover {
     transform:
-        translateY(-3px)
-        scale(1.012);
+        translateY(-2px)
+        scale(1.01);
 
-    border-color: rgba(255,255,255,.3);
+    border-color:
+        rgba(255,255,255,.3);
 
     background:
         linear-gradient(
@@ -1004,7 +1129,8 @@ body {
     box-shadow:
         0 15px 35px rgba(0,0,0,.48),
         0 0 25px rgba(255,255,255,.055),
-        inset 0 1px 0 rgba(255,255,255,.18);
+        inset 0 1px 0
+        rgba(255,255,255,.18);
 }
 
 
@@ -1013,8 +1139,19 @@ body {
 ========================================================= */
 
 .icon {
-    width: 40px;
-    height: 40px;
+    width:
+        clamp(
+            35px,
+            5vh,
+            42px
+        );
+
+    height:
+        clamp(
+            35px,
+            5vh,
+            42px
+        );
 
     flex-shrink: 0;
 
@@ -1023,9 +1160,11 @@ body {
     align-items: center;
     justify-content: center;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
-    border: 1px solid rgba(255,255,255,.15);
+    border:
+        1px solid
+        rgba(255,255,255,.15);
 
     background:
         linear-gradient(
@@ -1034,35 +1173,65 @@ body {
             rgba(255,255,255,.04)
         );
 
-    color: rgba(255,255,255,.95);
+    color:
+        rgba(255,255,255,.95);
 
-    font-size: 17px;
+    font-size:
+        clamp(
+            14px,
+            2.2vh,
+            17px
+        );
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.15),
-        0 0 15px rgba(255,255,255,.025);
+        inset 0 1px 0
+        rgba(255,255,255,.15),
+        0 0 15px
+        rgba(255,255,255,.025);
 }
+
+
+/* =========================================================
+   LINK TEXT
+========================================================= */
 
 .link-text {
     flex: 1;
 
-    margin-left: 12px;
+    margin-left: 11px;
 
-    font-size: 11px;
+    font-size:
+        clamp(
+            10px,
+            1.7vh,
+            12px
+        );
 
     font-weight: 700;
 
     letter-spacing: .5px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
+
+
+/* =========================================================
+   ARROW
+========================================================= */
 
 .link-arrow {
     width: 30px;
 
     text-align: center;
 
-    color: rgba(255,255,255,.28);
+    color:
+        rgba(255,255,255,.28);
 
-    font-size: 11px;
+    font-size: 10px;
 
     transition:
         transform .25s ease,
@@ -1070,9 +1239,11 @@ body {
 }
 
 .link:hover .link-arrow {
-    transform: translateX(4px);
+    transform:
+        translateX(4px);
 
-    color: rgba(255,255,255,.8);
+    color:
+        rgba(255,255,255,.8);
 }
 
 
@@ -1081,11 +1252,17 @@ body {
 ========================================================= */
 
 .footer {
-    margin-top: 17px;
+    margin-top:
+        clamp(
+            8px,
+            1.5vh,
+            14px
+        );
 
     text-align: center;
 
-    color: rgba(255,255,255,.24);
+    color:
+        rgba(255,255,255,.24);
 
     font-size: 8px;
 
@@ -1105,17 +1282,21 @@ body {
 
     border-radius: 50%;
 
-    background: rgba(255,255,255,.6);
+    background:
+        rgba(255,255,255,.6);
 
     pointer-events: none;
 
     z-index: 2;
 
     box-shadow:
-        0 0 8px rgba(255,255,255,.35);
+        0 0 8px
+        rgba(255,255,255,.35);
 
     animation:
-        particleFloat linear infinite;
+        particleFloat
+        linear
+        infinite;
 }
 
 
@@ -1124,6 +1305,7 @@ body {
 ========================================================= */
 
 @keyframes backgroundPulse {
+
     from {
         transform: scale(1);
         opacity: .65;
@@ -1133,9 +1315,11 @@ body {
         transform: scale(1.08);
         opacity: 1;
     }
+
 }
 
 @keyframes orbOne {
+
     from {
         transform: translate(0,0);
     }
@@ -1143,9 +1327,11 @@ body {
     to {
         transform: translate(120px,60px);
     }
+
 }
 
 @keyframes orbTwo {
+
     from {
         transform: translate(0,0);
     }
@@ -1153,9 +1339,11 @@ body {
     to {
         transform: translate(-100px,80px);
     }
+
 }
 
 @keyframes fadeUp {
+
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1165,35 +1353,50 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+
 }
 
 @keyframes introTitle {
+
     from {
         opacity: 0;
+
         transform:
             translateY(30px)
             scale(.95);
+
         filter:
             blur(10px)
-            drop-shadow(0 0 0 rgba(255,255,255,0));
+            drop-shadow(
+                0 0 0
+                rgba(255,255,255,0)
+            );
     }
 
     to {
         opacity: 1;
+
         transform:
             translateY(0)
             scale(1);
+
         filter:
             blur(0)
-            drop-shadow(0 0 30px rgba(255,255,255,.1));
+            drop-shadow(
+                0 0 30px
+                rgba(255,255,255,.1)
+            );
     }
+
 }
 
 @keyframes particleFloat {
+
     from {
         transform:
             translateY(20px)
             translateX(0);
+
         opacity: 0;
     }
 
@@ -1209,8 +1412,10 @@ body {
         transform:
             translateY(-100vh)
             translateX(40px);
+
         opacity: 0;
     }
+
 }
 
 
@@ -1221,77 +1426,110 @@ body {
 @media (max-width: 520px) {
 
     #main {
-        padding: 12px;
+        padding: 8px;
     }
 
     .card {
         width: 100%;
 
+        height:
+            calc(100vh - 16px);
+
         padding:
-            23px
             17px
-            16px;
+            15px
+            12px;
 
         border-radius: 25px;
     }
 
     .logo-button {
-        width: 76px;
-        height: 76px;
+        width: 72px;
+        height: 72px;
 
-        margin-bottom: 13px;
+        margin-bottom: 10px;
     }
 
     .brand h1 {
-        font-size: 30px;
+        font-size: 29px;
+    }
+
+    .brand p {
+        font-size: 7px;
     }
 
     .announcement {
-        margin-top: 13px;
+        margin-top: 10px;
 
-        padding: 9px 10px;
+        padding:
+            8px 10px;
+
+        font-size: 10px;
+    }
+
+    .description {
+        margin-top: 6px;
+
+        font-size: 8px;
     }
 
     .status {
         margin:
-            11px
-            auto
-            12px;
+            9px auto
+            10px;
+
+        padding:
+            6px 11px;
+
+        font-size: 8px;
     }
 
     .links {
-        gap: 7px;
+        gap: 5px;
     }
 
     .link {
-        min-height: 48px;
+        height: 47px;
+
+        padding:
+            5px
+            8px
+            5px
+            10px;
+
+        border-radius: 14px;
     }
 
     .icon {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
 
-        border-radius: 10px;
+        border-radius: 9px;
 
-        font-size: 15px;
+        font-size: 14px;
     }
 
     .link-text {
         margin-left: 9px;
 
-        font-size: 10px;
-    }
-
-    .link-arrow {
         font-size: 9px;
     }
 
+    .link-arrow {
+        width: 25px;
+
+        font-size: 8px;
+    }
+
     .footer {
-        margin-top: 12px;
+        margin-top: 8px;
+
+        font-size: 7px;
     }
 
     .intro-content {
-        padding: 30px 15px;
+        padding:
+            30px 15px;
     }
 
     .intro-title {
@@ -1305,11 +1543,74 @@ body {
 
         letter-spacing: 3px;
     }
+
+    .enter-button {
+        width: 190px;
+        height: 55px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SHORT SCREENS
+========================================================= */
+
+@media (max-height: 720px) {
+
+    .card {
+        padding-top: 15px;
+        padding-bottom: 10px;
+    }
+
+    .logo-button {
+        width: 68px;
+        height: 68px;
+
+        margin-bottom: 8px;
+    }
+
+    .brand h1 {
+        font-size: 28px;
+    }
+
+    .announcement {
+        margin-top: 8px;
+        padding: 7px 10px;
+    }
+
+    .description {
+        margin-top: 5px;
+    }
+
+    .status {
+        margin:
+            7px auto
+            8px;
+    }
+
+    .links {
+        gap: 4px;
+    }
+
+    .link {
+        height: 44px;
+    }
+
+    .icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .footer {
+        margin-top: 6px;
+    }
+
 }
 
 </style>
-</head>
 
+</head>
 
 <body>
 
@@ -1325,10 +1626,13 @@ body {
     <div class="floor"></div>
 
     <div class="orb one"></div>
+
     <div class="orb two"></div>
+
     <div class="orb three"></div>
 
 </div>
+
 
 <div class="vignette"></div>
 
@@ -1375,7 +1679,10 @@ body {
 
 <main id="main">
 
-    <div class="card" id="card">
+    <div
+        class="card"
+        id="card"
+    >
 
 
         <!-- LOGO -->
@@ -1412,14 +1719,18 @@ body {
         <!-- ANNOUNCEMENT -->
 
         <div class="announcement">
+
             ❤️🎉 צום קל וגמר חתימה טובה לכולם! 
+
         </div>
 
 
         <!-- DESCRIPTION -->
 
         <div class="description">
+
             Creator • Streams • Community
+
         </div>
 
 
@@ -1442,12 +1753,14 @@ body {
         </div>
 
 
-        <!-- LINKS -->
+        <!-- =================================================
+             LINKS
+        ================================================== -->
 
         <div class="links">
 
 
-            <!-- YouTube -->
+            <!-- YOUTUBE -->
 
             <a
                 class="link"
@@ -1457,7 +1770,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-brands fa-youtube"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1465,13 +1780,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- Kick -->
+            <!-- KICK -->
 
             <a
                 class="link"
@@ -1481,7 +1798,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-solid fa-play"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1489,13 +1808,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- Instagram -->
+            <!-- INSTAGRAM -->
 
             <a
                 class="link"
@@ -1505,7 +1826,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-brands fa-instagram"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1513,13 +1836,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- Discord -->
+            <!-- DISCORD -->
 
             <a
                 class="link"
@@ -1529,7 +1854,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-brands fa-discord"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1537,13 +1864,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- TikTok -->
+            <!-- TIKTOK -->
 
             <a
                 class="link"
@@ -1553,7 +1882,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-brands fa-tiktok"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1561,13 +1892,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- Tip -->
+            <!-- TIP -->
 
             <a
                 class="link"
@@ -1577,7 +1910,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-solid fa-heart"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1585,13 +1920,15 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
 
 
-            <!-- S Computers -->
+            <!-- S COMPUTERS -->
 
             <a
                 class="link"
@@ -1601,7 +1938,9 @@ body {
             >
 
                 <div class="icon">
+
                     <i class="fa-solid fa-computer"></i>
+
                 </div>
 
                 <div class="link-text">
@@ -1609,7 +1948,9 @@ body {
                 </div>
 
                 <div class="link-arrow">
+
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
                 </div>
 
             </a>
@@ -1621,7 +1962,9 @@ body {
         <!-- FOOTER -->
 
         <div class="footer">
+
             © Created by ZaDAV1D
+
         </div>
 
 
@@ -1636,94 +1979,134 @@ body {
    ELEMENTS
 ========================================================= */
 
-const intro = document.getElementById("intro");
-const main = document.getElementById("main");
-const enterButton = document.getElementById("enterButton");
+const intro =
+    document.getElementById("intro");
 
-const card = document.getElementById("card");
+const main =
+    document.getElementById("main");
 
-const mouseLight = document.getElementById("mouseLight");
+const enterButton =
+    document.getElementById("enterButton");
 
-const statusText = document.getElementById("statusText");
-const statusDot = document.getElementById("statusDot");
+const card =
+    document.getElementById("card");
 
-const logoButton = document.getElementById("logoButton");
+const mouseLight =
+    document.getElementById("mouseLight");
+
+const statusText =
+    document.getElementById("statusText");
+
+const statusDot =
+    document.getElementById("statusDot");
+
+const logoButton =
+    document.getElementById("logoButton");
 
 
 /* =========================================================
    ENTER
 ========================================================= */
 
-enterButton.addEventListener("click", () => {
+enterButton.addEventListener(
+    "click",
+    () => {
 
-    intro.classList.add("hidden");
+        intro.classList.add("hidden");
 
-    setTimeout(() => {
-        main.classList.add("show");
-    }, 180);
+        setTimeout(
+            () => {
 
-});
+                main.classList.add("show");
+
+            },
+            180
+        );
+
+    }
+);
 
 
 /* =========================================================
    MOUSE LIGHT
 ========================================================= */
 
-document.addEventListener("mousemove", (event) => {
+document.addEventListener(
+    "mousemove",
+    (event) => {
 
-    mouseLight.style.left = event.clientX + "px";
-    mouseLight.style.top = event.clientY + "px";
+        mouseLight.style.left =
+            event.clientX + "px";
 
-});
+        mouseLight.style.top =
+            event.clientY + "px";
+
+    }
+);
 
 
 /* =========================================================
-   3D CARD
+   CARD 3D EFFECT
 ========================================================= */
 
-document.addEventListener("mousemove", (event) => {
+document.addEventListener(
+    "mousemove",
+    (event) => {
 
-    if (!main.classList.contains("show")) {
-        return;
+        if (
+            !main.classList.contains("show")
+        ) {
+            return;
+        }
+
+        const rect =
+            card.getBoundingClientRect();
+
+        const x =
+            event.clientX -
+            rect.left -
+            rect.width / 2;
+
+        const y =
+            event.clientY -
+            rect.top -
+            rect.height / 2;
+
+        const rotateX =
+            -(y / rect.height) * 4;
+
+        const rotateY =
+            (x / rect.width) * 4;
+
+        card.style.transform =
+            `
+            perspective(1000px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            translateY(-2px)
+            `;
+
     }
-
-    const rect = card.getBoundingClientRect();
-
-    const x =
-        event.clientX -
-        rect.left -
-        rect.width / 2;
-
-    const y =
-        event.clientY -
-        rect.top -
-        rect.height / 2;
-
-    const rotateX =
-        -(y / rect.height) * 4;
-
-    const rotateY =
-        (x / rect.width) * 4;
-
-    card.style.transform =
-        `perspective(1000px)
-         rotateX(${rotateX}deg)
-         rotateY(${rotateY}deg)
-         translateY(-2px)`;
-
-});
-
-
-document.addEventListener("mouseleave", () => {
-
-    card.style.transform =
-        "perspective(1000px) rotateX(0deg) rotateY(0deg)";
-
-});
+);
 
 
 /* =========================================================
-   RANDOM LOGO LINK
+   RESET CARD
+========================================================= */
+
+document.addEventListener(
+    "mouseleave",
+    () => {
+
+        card.style.transform =
+            "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+
+    }
+);
+
+
+/* =========================================================
+   RANDOM LINKS
 ========================================================= */
 
 const randomLinks = [
@@ -1745,23 +2128,26 @@ const randomLinks = [
 ];
 
 
-logoButton.addEventListener("click", () => {
+logoButton.addEventListener(
+    "click",
+    () => {
 
-    const random =
-        randomLinks[
-            Math.floor(
-                Math.random() *
-                randomLinks.length
-            )
-        ];
+        const random =
+            randomLinks[
+                Math.floor(
+                    Math.random() *
+                    randomLinks.length
+                )
+            ];
 
-    window.open(
-        random,
-        "_blank",
-        "noopener,noreferrer"
-    );
+        window.open(
+            random,
+            "_blank",
+            "noopener,noreferrer"
+        );
 
-});
+    }
+);
 
 
 /* =========================================================
@@ -1772,20 +2158,28 @@ async function updateKickStatus() {
 
     try {
 
-        const response = await fetch(
-            "kick-status.json?t=" +
-            Date.now(),
-            {
-                cache: "no-store"
-            }
-        );
+        const response =
+            await fetch(
+                "kick-status.json?t=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
 
         if (!response.ok) {
-            throw new Error("Status file unavailable");
+
+            throw new Error(
+                "Status file unavailable"
+            );
+
         }
 
         const data =
             await response.json();
+
+
+        /* ONLINE */
 
         if (data.live === true) {
 
@@ -1801,7 +2195,12 @@ async function updateKickStatus() {
             statusDot.style.boxShadow =
                 "0 0 12px rgba(255,255,255,.9)";
 
-        } else {
+        }
+
+
+        /* OFFLINE */
+
+        else {
 
             statusText.textContent =
                 "OFFLINE";
@@ -1817,7 +2216,12 @@ async function updateKickStatus() {
 
         }
 
-    } catch (error) {
+    }
+
+
+    /* ERROR */
+
+    catch (error) {
 
         statusText.textContent =
             "OFFLINE";
@@ -1833,12 +2237,12 @@ async function updateKickStatus() {
 }
 
 
-/* Check immediately */
+/* Initial check */
 
 updateKickStatus();
 
 
-/* Then every 15 seconds */
+/* Check every 15 seconds */
 
 setInterval(
     updateKickStatus,
@@ -1886,7 +2290,7 @@ function createParticle() {
 }
 
 
-/* Create particles */
+/* Create 35 particles */
 
 for (
     let i = 0;
@@ -1900,7 +2304,7 @@ for (
 
 
 /* =========================================================
-   BASIC PAGE PROTECTION
+   BASIC UI PROTECTION
 ========================================================= */
 
 document.addEventListener(
@@ -1919,27 +2323,50 @@ document.addEventListener(
 );
 
 
+/* =========================================================
+   KEYBOARD PROTECTION
+========================================================= */
+
 document.addEventListener(
     "keydown",
     event => {
 
         if (
-            event.key === "F12" ||
+
+            /* F12 */
+
+            event.key === "F12"
+
+            ||
+
+            /* CTRL + SHIFT + I/J/C */
 
             (
                 event.ctrlKey &&
                 event.shiftKey &&
-                ["I", "J", "C"].includes(
-                    event.key.toUpperCase()
-                )
-            ) ||
-
-            (
-                event.ctrlKey &&
-                ["U", "S"].includes(
+                [
+                    "I",
+                    "J",
+                    "C"
+                ].includes(
                     event.key.toUpperCase()
                 )
             )
+
+            ||
+
+            /* CTRL + U/S */
+
+            (
+                event.ctrlKey &&
+                [
+                    "U",
+                    "S"
+                ].includes(
+                    event.key.toUpperCase()
+                )
+            )
+
         ) {
 
             event.preventDefault();
