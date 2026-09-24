@@ -3399,15 +3399,37 @@ body {
 
         </div>
 
+<!-- ANNOUNCEMENT -->
+<div class="announcement" id="announcement">
+    הוא לא באמת פרש??
+</div>
 
-        <!-- ANNOUNCEMENT -->
+<script>
+async function loadAnnouncement() {
+    try {
+        const response = await fetch(
+            './announcement.json?ts=' + Date.now(),
+            { cache: 'no-store' }
+        );
 
-        <div class="announcement">
+        if (!response.ok) {
+            console.error('Announcement request failed:', response.status);
+            return;
+        }
 
-            הוא לא באמת פרש??
+        const data = await response.json();
+        const element = document.getElementById('announcement');
 
-        </div>
-
+        if (element && typeof data.text === 'string') {
+            element.textContent = data.text;
+        }
+    } catch (error) {
+        console.error('Failed to load announcement:', error);
+    }
+}
+    
+loadAnnouncement();
+</script>
 
         <!-- DESCRIPTION -->
 
