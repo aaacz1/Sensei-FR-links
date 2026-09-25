@@ -2968,8 +2968,8 @@ body {
 }
 
 .link {
-    min-height: 68px;
-    height: 132px;
+    min-height: 76px;
+    height: 76px;
     padding: 7px 14px 7px 16px;
     border-radius: 18px;
     border-width: 1.5px;
@@ -3226,6 +3226,7 @@ body {
 /* Subscribe CTA above emotes */
 .emoji-subscribe {
     margin: -8px auto 22px;
+    direction: rtl;
     width: min(560px, 100%);
     padding: 15px 18px;
     border: 1px solid rgba(255,212,121,.38);
@@ -3241,10 +3242,12 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    margin-left: 5px;
+    margin-inline-start: 6px;
     color: #ffd479;
+    font-size: 1.22em;
+    font-weight: 900;
     text-decoration: none;
-    border-bottom: 1px solid rgba(255,212,121,.55);
+    border-bottom: 2px solid rgba(255,212,121,.75);
 }
 
 .emoji-subscribe a:hover {
@@ -3292,6 +3295,117 @@ body {
     }
 }
 
+
+/* Larger, consistent link cards and a richer ambient backdrop */
+.links > .link,
+.links > .link:nth-child(even) {
+    width: 100%;
+    min-height: 94px;
+    height: 94px;
+    padding: 12px 20px;
+    border-radius: 20px;
+}
+
+.links > .link .icon {
+    flex: 0 0 62px;
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+    font-size: 24px;
+}
+
+.links > .link .link-text {
+    font-size: 17px;
+    line-height: 1.3;
+}
+
+.links > .link .link-arrow {
+    width: 42px;
+    font-size: 15px;
+}
+
+#background {
+    background:
+        radial-gradient(ellipse at 18% 22%, rgba(255,255,255,.12), transparent 28%),
+        radial-gradient(ellipse at 82% 34%, rgba(255,255,255,.085), transparent 25%),
+        radial-gradient(ellipse at 50% 88%, rgba(160,180,210,.12), transparent 38%),
+        linear-gradient(145deg, #030303 0%, #111318 48%, #050505 100%);
+}
+
+#background::before {
+    opacity: .58;
+    filter: blur(58px);
+}
+
+@media (max-width: 520px) {
+    .links > .link,
+    .links > .link:nth-child(even) {
+        min-height: 82px;
+        height: 82px;
+        padding: 9px 12px;
+        border-radius: 17px;
+    }
+
+    .links > .link .icon {
+        flex-basis: 54px;
+        width: 54px;
+        height: 54px;
+        font-size: 21px;
+    }
+
+    .links > .link .link-text {
+        font-size: 15px;
+    }
+}
+
+.links > .link {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .65s ease, transform .65s cubic-bezier(.2,.75,.25,1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.links > .link.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .links > .link {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Give each icon a short, playful bounce when its card appears */
+.links > .link.is-visible .icon {
+    animation: linkIconBounce .72s cubic-bezier(.22,.75,.25,1.25) both;
+}
+
+@keyframes linkIconBounce {
+    0% { transform: translateY(-16px) scale(.82); }
+    48% { transform: translateY(3px) scale(1.08); }
+    72% { transform: translateY(-5px) scale(.97); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+.links > .link {
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.links > .link:focus-visible {
+    outline: 2px solid rgba(255,255,255,.9);
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .links > .link.is-visible .icon {
+        animation: none;
+    }
+}
 </style>
 
 </head>
@@ -3429,8 +3543,7 @@ async function loadAnnouncement() {
     }
 }
     
-loadAnnouncement();
-</script>
+loadAnnouncement();</script>
 
         <!-- DESCRIPTION -->
 
@@ -3719,11 +3832,9 @@ loadAnnouncement();
         <h2 class="emoji-title" id="emojiTitle">האימוטים של סנסי • רק לסאבים</h2>
 
         <div class="emoji-subscribe">
-            רוצים להשתמש באימוטים? <br>
-            <span>תעשו סאב בקיק כדי לקבל גישה!</span>
+            בשביל לקבל גישה לאימוטים
             <a href="https://kick.com/sensei_fr" target="_blank" rel="noopener noreferrer">
-                <i class="fa-solid fa-heart"></i>
-                לעשות סאב
+                תעשו סאב
             </a>
         </div>
 
@@ -4308,8 +4419,31 @@ document.addEventListener(
 
     }
 );
-
+/* Fade links in as they enter the viewport */
+const linkCards = document.querySelectorAll(".links > .link");
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+    linkCards.forEach((card) => card.classList.add("is-visible"));
+} else {
+    const linkObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: "0px 0px -35px 0px" });
+    linkCards.forEach((card, index) => {
+        card.style.setProperty("--reveal-delay", `${Math.min(index * 70, 350)}ms`);
+        linkObserver.observe(card);
+    });
+}
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
