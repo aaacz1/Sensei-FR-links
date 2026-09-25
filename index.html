@@ -3406,6 +3406,43 @@ body {
         animation: none;
     }
 }
+
+/* Most viewed Kick clips tab */
+.clips-panel {
+    font-family: "Heebo", sans-serif;
+    width: min(1000px, 100%);
+    margin: 0 auto;
+    padding: clamp(22px, 4vw, 38px);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(25,27,31,.94), rgba(8,9,11,.94));
+    box-shadow: 0 24px 80px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.08);
+    direction: rtl;
+}
+.clips-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:24px; }
+.clips-eyebrow { display:none; }
+.clips-title { margin:0; color:#fff; font-family:"Heebo",sans-serif; font-size:clamp(27px,4vw,40px); font-weight:800; letter-spacing:-.4px; }
+.clips-description { margin:8px 0 0; color:rgba(255,255,255,.68); font-family:"Heebo",sans-serif; font-size:15px; font-weight:500; }
+.clips-kick-link { flex:none; padding:11px 15px; border:1px solid rgba(83,255,166,.34); border-radius:12px; color:#8fffb9; background:rgba(25,190,110,.09); font-size:12px; font-weight:800; text-decoration:none; transition:.2s ease; }
+.clips-kick-link:hover { background:rgba(25,190,110,.19); transform:translateY(-2px); }
+.clips-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.clip-card { overflow:hidden; min-width:0; border:1px solid rgba(255,255,255,.13); border-radius:16px; background:rgba(255,255,255,.045); color:#fff; text-decoration:none; transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+.clip-card:hover { transform:translateY(-4px); border-color:rgba(83,255,166,.5); box-shadow:0 15px 34px rgba(0,0,0,.4); }
+.clip-thumb { position:relative; display:grid; place-items:center; aspect-ratio:16/9; overflow:hidden; background:radial-gradient(circle at 50% 40%,rgba(83,255,166,.17),transparent 55%),linear-gradient(135deg,#222,#080808); }
+.clip-thumb img { width:100%; height:100%; object-fit:cover; }
+.clip-rank { position:absolute; top:10px; right:10px; display:grid; place-items:center; width:30px; height:30px; border:1px solid rgba(255,255,255,.3); border-radius:50%; background:rgba(0,0,0,.74); font:900 12px "Heebo",sans-serif; }
+.clip-play { position:absolute; display:grid; place-items:center; width:46px; height:46px; border:1px solid rgba(255,255,255,.7); border-radius:50%; background:rgba(0,0,0,.52); color:#fff; font-size:15px; opacity:.9; }
+.clip-info { padding:13px 14px 15px; }
+.clip-open-label { display:block; margin-top:12px; color:#8fffb9; font:700 13px "Heebo",sans-serif; }
+.clip-card:hover .clip-open-label { color:#fff; }
+.clip-name { font-family:"Heebo",sans-serif; display:-webkit-box; overflow:hidden; min-height:2.8em; color:#fff; font-size:14px; font-weight:800; line-height:1.4; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.clip-meta { font-family:"Heebo",sans-serif; display:flex; justify-content:space-between; gap:8px; margin-top:11px; color:rgba(255,255,255,.58); font-size:11px; }
+.clip-views { color:#8fffb9; font-family:"Heebo",sans-serif; font-weight:800; white-space:nowrap; }
+.clips-state { grid-column:1/-1; margin:0; padding:30px 18px; border:1px solid rgba(255,255,255,.1); border-radius:14px; color:rgba(255,255,255,.7); text-align:center; line-height:1.7; }
+.clips-state a { color:#8fffb9; font-weight:800; }
+@media(max-width:720px) { .clips-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .clips-panel {
+    font-family: "Heebo", sans-serif; padding:18px 14px; } .clips-heading { align-items:stretch; flex-direction:column; } .clips-kick-link { align-self:flex-start; } .clips-grid { grid-template-columns:1fr; } }
 </style>
 
 </head>
@@ -3475,6 +3512,7 @@ body {
         <button class="site-tab-button" type="button" data-site-tab="bit">BIT</button>
         <button class="site-tab-button" type="button" data-site-tab="schedule">SCHEDULE</button>
         <button class="site-tab-button" type="button" data-site-tab="emojis">EMOTES</button>
+        <button class="site-tab-button" type="button" data-site-tab="clips">CLIPS</button>
     </nav>
 
     <div
@@ -3851,6 +3889,20 @@ loadAnnouncement();</script>
 
     </section>
 
+    <section class="clips-panel site-tab-panel" aria-labelledby="clipsTitle" data-site-panel="clips">
+        <div class="clips-heading">
+            <div>
+                
+                <h2 class="clips-title" id="clipsTitle">הקליפים של סנסיי</h2>
+                <p class="clips-description">הקליפים הפופולריים של סנסיי — לחצו לצפייה ב-Kick</p>
+            </div>
+            <a class="clips-kick-link" href="https://kick.com/sensei_fr/clips?sort=view&time=all" target="_blank" rel="noopener noreferrer">לכל הקליפים ב-Kick <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+        </div>
+        <div class="clips-grid" id="clipsGrid" aria-live="polite">
+            <p class="clips-state">טוען את הקליפים הכי נצפים…</p>
+        </div>
+    </section>
+
 </main>
 
 
@@ -3896,7 +3948,7 @@ const introSplash =
 ========================================================= */
 
 function applySiteTab(selectedTab) {
-    const validTab = ["links", "bit", "schedule", "emojis"].includes(selectedTab)
+    const validTab = ["links", "bit", "schedule", "emojis", "clips"].includes(selectedTab)
         ? selectedTab
         : "links";
 
@@ -4437,10 +4489,98 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("Intersec
         linkObserver.observe(card);
     });
 }
+
+/* Load Kick clips ranked by all-time views on demand */
+const clipsGrid = document.getElementById("clipsGrid");
+let clipsLoaded = false;
+async function loadTopClips() {
+    if (clipsLoaded || !clipsGrid) return;
+    clipsLoaded = true;
+    try {
+        const response = await fetch("https://kick.com/api/v2/channels/sensei_fr/clips?sort=view&time=all&cursor=0", { headers: { "Accept": "application/json" } });
+        if (!response.ok) throw new Error("Kick clips are unavailable");
+        const payload = await response.json();
+        const clips = Array.isArray(payload.clips) ? payload.clips.slice(0, 12) : [];
+        if (!clips.length) throw new Error("No clips returned");
+        clipsGrid.replaceChildren();
+        clips.forEach((clip, index) => {
+            const playableUrl = String(clip.clip_url || clip.video_url || clip.url || "");
+            const idInVideoUrl = (playableUrl.match(/clip_[A-Z0-9_-]+/i) || [])[0];
+            const rawClipId = [clip.id, clip.slug, idInVideoUrl].find((value) => typeof value === "string" && value.length);
+            const clipId = rawClipId ? (rawClipId.startsWith("clip_") ? rawClipId : `clip_${rawClipId}`) : null;
+            if (!clipId) return;
+            const card = document.createElement("a");
+            card.className = "clip-card";
+            card.href = `https://kick.com/sensei_fr/clips/${encodeURIComponent(clipId)}`;
+            card.setAttribute("aria-label", `לצפייה בקליפ: ${clip.title || "קליפ של סנסיי"} ב-Kick`);
+            card.target = "_blank";
+            card.rel = "noopener noreferrer";
+            const thumb = document.createElement("div");
+            thumb.className = "clip-thumb";
+            const imageUrl = clip.thumbnail_url || clip.thumbnail || clip.preview_url;
+            if (imageUrl) {
+                const image = document.createElement("img");
+                image.src = imageUrl;
+                image.alt = "";
+                image.loading = "lazy";
+                thumb.append(image);
+            }
+            const rank = document.createElement("span");
+            rank.className = "clip-rank";
+            rank.textContent = String(index + 1);
+            thumb.append(rank);
+            const play = document.createElement("span");
+            play.className = "clip-play";
+            play.innerHTML = '<i class="fa-solid fa-play" aria-hidden="true"></i>';
+            thumb.append(play);
+            const info = document.createElement("div");
+            info.className = "clip-info";
+            const title = document.createElement("span");
+            title.className = "clip-name";
+            title.textContent = clip.title || "קליפ של סנסיי";
+            const meta = document.createElement("div");
+            meta.className = "clip-meta";
+            const category = document.createElement("span");
+            category.textContent = clip.category?.name || clip.category || "Kick";
+            const views = document.createElement("span");
+            views.className = "clip-views";
+            views.textContent = `${Number(clip.view_count ?? clip.views ?? 0).toLocaleString("he-IL")} צפיות`;
+            meta.append(category, views);
+            const openLabel = document.createElement("span");
+            openLabel.className = "clip-open-label";
+            openLabel.textContent = "לצפייה ב-Kick  ↗";
+            info.append(title, meta, openLabel);
+            card.append(thumb, info);
+            clipsGrid.append(card);
+        });
+        if (!clipsGrid.children.length) throw new Error("Could not display clips");
+    } catch (error) {
+        clipsLoaded = false;
+        const message = document.createElement("p");
+        message.className = "clips-state";
+        message.append("Kick לא אפשר לטעון את רשימת הצפיות כרגע. אפשר לפתוח את הקליפים הפופולריים ישירות ב-");
+        const link = document.createElement("a");
+        link.href = "https://kick.com/sensei_fr/clips?sort=view&time=all";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Kick";
+        message.append(link, ".");
+        clipsGrid.replaceChildren(message);
+    }
+}
+siteTabButtons.forEach((button) => {
+    if (button.dataset.siteTab === "clips") button.addEventListener("click", loadTopClips);
+});
+if (window.location.hash === "#clips") loadTopClips();
 </script>
 
 </body>
 </html>
+
+
+
+
+
 
 
 
