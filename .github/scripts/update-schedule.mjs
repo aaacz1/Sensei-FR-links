@@ -33,7 +33,14 @@ try {
     })
     .filter(Boolean));
 
-  const jerusalemDateParts = new Intl.DateTimeFormat("en-US", {\n  timeZone: "Asia/Jerusalem",\n  year: "numeric",\n  month: "numeric",\n  day: "numeric"\n}).formatToParts(new Date());\nconst jerusalemDate = Object.fromEntries(jerusalemDateParts.map(({ type, value }) => [type, value]));\nconst currentYear = Number(jerusalemDate.year);
+  const jerusalemDateParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Jerusalem",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  }).formatToParts(new Date());
+  const jerusalemDate = Object.fromEntries(jerusalemDateParts.map(({ type, value }) => [type, value]));
+  const currentYear = Number(jerusalemDate.year);
   const parseDate = (label) => {
     const normalized = label.replace(/\s+/g, " ").trim();
     const withYear = /\b\d{4}\b/.test(normalized) ? normalized : `${normalized}, ${currentYear}`;
