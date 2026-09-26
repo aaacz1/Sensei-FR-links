@@ -73,7 +73,6 @@ try {
   }
 
   const result = {
-    updatedAt: new Date().toISOString(),
     weekStart: weekStart.toISOString().slice(0, 10),
     emptyDays: currentWeek
       .filter((day) => day.streams.length === 0)
@@ -87,10 +86,20 @@ try {
     })))
   };
 
-  const output = `${JSON.stringify(result, null, 2)}\n`;
-  await writeFile("schedule.json.tmp", output, "utf8");
-  await rename("schedule.json.tmp", "schedule.json");
-  console.log(JSON.stringify(result, null, 2));
+  const scheduleUnchanged =
+    currentSchedule.weekStart === result.weekStart &&
+    JSON.stringify(currentSchedule.emptyDays) === JSON.stringify(result.emptyDays) &&
+    JSON.stringify(currentSchedule.streams) === JSON.stringify(result.streams);
+
+  if (scheduleUnchanged) {
+    console.log("Kick schedule is unchanged.");
+  } else {
+    result.updatedAt = new Date().toISOString();
+    const output = `${JSON.stringify(result, null, 2)}\n`;
+    await writeFile("schedule.json.tmp", output, "utf8");
+    await rename("schedule.json.tmp", "schedule.json");
+    console.log(JSON.stringify(result, null, 2));
+  }
 } finally {
   await browser.close();
 }
