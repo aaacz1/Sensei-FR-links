@@ -3449,6 +3449,93 @@ body {
     font-family: "Heebo", sans-serif; padding:18px 14px; } .clips-heading { align-items:stretch; flex-direction:column; } .clips-kick-link { align-self:flex-start; } .clips-grid { grid-template-columns:1fr; } }
 </style>
 
+
+<style id="visual-refresh">
+/* Soft color depth and a unified ice-blue / violet palette */
+body { background: #080914; }
+#background {
+    background:
+        radial-gradient(ellipse at 50% 12%, rgba(151, 137, 255, .19), transparent 35%),
+        radial-gradient(ellipse at 12% 48%, rgba(75, 208, 220, .13), transparent 29%),
+        radial-gradient(ellipse at 88% 73%, rgba(203, 118, 255, .12), transparent 27%),
+        linear-gradient(145deg, #070812 0%, #12172a 48%, #080e19 100%);
+}
+#background::before {
+    opacity: .72;
+    filter: blur(64px);
+}
+#background::after {
+    background: linear-gradient(90deg, transparent, rgba(153, 145, 255, .24), rgba(105, 224, 226, .22), transparent);
+    box-shadow: 0 0 54px rgba(127, 195, 255, .13);
+}
+
+/* Staggered fade-in for the page and each selected tab */
+#main.intro-visible > .site-tabs {
+    animation: contentFade .72s .04s both cubic-bezier(.2,.75,.25,1);
+}
+#main.intro-visible > .site-tab-panel.active {
+    animation: contentFade .9s .16s both cubic-bezier(.2,.75,.25,1);
+}
+.site-tab-button { transition: color .25s, background .25s, border-color .25s, transform .25s; }
+.site-tab-button:hover { transform: translateY(-2px); }
+
+@keyframes contentFade {
+    from { opacity: 0; transform: translateY(22px); filter: blur(5px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Cleaner weekly board with warm live markers */
+.schedule-title { color: #f3f0ff; text-shadow: 0 0 30px rgba(170,151,255,.28); }
+.schedule-message { color: rgba(232,230,255,.72); }
+.schedule-board {
+    border-color: rgba(164,148,255,.27);
+    background: linear-gradient(145deg, rgba(27,25,53,.91), rgba(9,13,27,.94));
+    box-shadow: 0 28px 80px rgba(0,0,0,.48), 0 0 48px rgba(140,120,255,.09), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.schedule-weekday {
+    color: #c4b9ff;
+    background: rgba(144,124,255,.12);
+    border-color: rgba(177,158,255,.2);
+}
+.schedule-day {
+    border-color: rgba(191,196,226,.13);
+    background: linear-gradient(155deg, rgba(34,37,62,.8), rgba(13,16,30,.92));
+}
+.schedule-day:hover {
+    border-color: rgba(130,220,226,.58);
+    box-shadow: 0 14px 32px rgba(0,0,0,.34), 0 0 20px rgba(113,213,224,.09);
+}
+.schedule-day.today {
+    border-color: rgba(255,205,115,.78);
+    background: linear-gradient(155deg, rgba(70,54,48,.62), rgba(19,20,33,.94));
+    box-shadow: 0 0 0 1px rgba(255,205,115,.18), 0 0 28px rgba(255,205,115,.12);
+}
+.schedule-day-number { color: #d8ceff; }
+.stream-card {
+    border-color: rgba(125,224,216,.5);
+    background: linear-gradient(145deg, rgba(38,116,110,.76), rgba(25,35,58,.94));
+    box-shadow: 0 9px 24px rgba(0,0,0,.28);
+}
+.stream-time { color: #8df1df; }
+.schedule-empty {
+    border-color: rgba(186,182,220,.21);
+    background: rgba(6,9,20,.45);
+}
+.schedule-link {
+    border-color: rgba(255,205,115,.35);
+    background: rgba(255,205,115,.09);
+    color: #ffdb92;
+    transition: transform .2s, background .2s;
+}
+.schedule-link:hover { transform: translateY(-2px); background: rgba(255,205,115,.16); }
+
+@media (prefers-reduced-motion: reduce) {
+    #main.intro-visible > .site-tabs,
+    #main.intro-visible > .site-tab-panel.active { animation: none; }
+    .site-tab-button, .schedule-day, .schedule-link { transition: none; }
+}
+</style>
+
 </head>
 
 <body>
