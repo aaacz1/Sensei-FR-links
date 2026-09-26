@@ -3992,22 +3992,8 @@ window.setTimeout(() => {
    SCHEDULE STATUS
 ========================================================= */
 
-let scheduledStreams = [
-    {
-        date: "2026-09-25T18:00:00",
-        title: "לייב",
-        time: "18:00",
-        category: "JUST CHATTING"
-    },
-    {
-        date: "2026-09-26T18:00:00",
-        title: "לייב",
-        time: "18:00",
-        category: "JUST CHATTING"
-    }
-];
-
-let noStreamDays = ["2026-09-22"];
+let scheduledStreams = [];
+let noStreamDays = [];
 
 function getCurrentWeekBounds() {
     const start = new Date();
@@ -4145,31 +4131,10 @@ async function updateScheduleMessage() {
             if (Array.isArray(schedule.streams)) {
                 scheduledStreams = [...schedule.streams];
 
-                // Keep the confirmed Saturday 26/09 live visible even if
-                // schedule.json is missing that entry.
-                const saturday = "2026-09-26";
-                if (!scheduledStreams.some((stream) =>
-                    String(stream.date || "").startsWith(saturday)
-                )) {
-                    scheduledStreams.push({
-                        date: "2026-09-26T18:00:00",
-                        title: "לייב",
-                        time: "18:00",
-                        category: "JUST CHATTING"
-                    });
-                }
             }
 
             if (Array.isArray(schedule.emptyDays)) {
-                // 26/09 is a live day, so it can never stay in "no stream".
-                noStreamDays = schedule.emptyDays.filter(
-                    (date) => date !== "2026-09-26"
-                );
-
-                // 22/09 remains explicitly marked as a no-live day.
-                if (!noStreamDays.includes("2026-09-22")) {
-                    noStreamDays.push("2026-09-22");
-                }
+                noStreamDays = schedule.emptyDays;
             }
         }
 
