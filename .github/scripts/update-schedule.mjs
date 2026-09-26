@@ -33,7 +33,7 @@ try {
     })
     .filter(Boolean));
 
-  const currentYear = new Date().getUTCFullYear();
+  const jerusalemDateParts = new Intl.DateTimeFormat("en-US", {\n  timeZone: "Asia/Jerusalem",\n  year: "numeric",\n  month: "numeric",\n  day: "numeric"\n}).formatToParts(new Date());\nconst jerusalemDate = Object.fromEntries(jerusalemDateParts.map(({ type, value }) => [type, value]));\nconst currentYear = Number(jerusalemDate.year);
   const parseDate = (label) => {
     const normalized = label.replace(/\s+/g, " ").trim();
     const withYear = /\b\d{4}\b/.test(normalized) ? normalized : `${normalized}, ${currentYear}`;
@@ -41,12 +41,13 @@ try {
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   };
 
-  const now = new Date();
-  const weekStart = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - now.getUTCDay()
+  const localToday = new Date(Date.UTC(
+    Number(jerusalemDate.year),
+    Number(jerusalemDate.month) - 1,
+    Number(jerusalemDate.day)
   ));
+  const weekStart = new Date(localToday);
+  weekStart.setUTCDate(weekStart.getUTCDate() - weekStart.getUTCDay());
   const weekEnd = new Date(weekStart);
   weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
 
