@@ -35,8 +35,8 @@ try {
 
   const currentYear = new Date().getUTCFullYear();
   const parseDate = (label) => {
-    const normalized = label.replace(/\\s+/g, " ").trim();
-    const withYear = /\\b\\d{4}\\b/.test(normalized) ? normalized : `${normalized}, ${currentYear}`;
+    const normalized = label.replace(/\s+/g, " ").trim();
+    const withYear = /\b\d{4}\b/.test(normalized) ? normalized : `${normalized}, ${currentYear}`;
     const parsed = new Date(`${withYear} 00:00:00 UTC`);
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   };
@@ -79,7 +79,7 @@ try {
     })))
   };
 
-  const output = `${JSON.stringify(result, null, 2)}\\n`;
+  const output = `${JSON.stringify(result, null, 2)}\n`;
   await writeFile("schedule.json.tmp", output, "utf8");
   await rename("schedule.json.tmp", "schedule.json");
   console.log(JSON.stringify(result, null, 2));
