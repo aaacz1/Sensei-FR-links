@@ -3374,6 +3374,22 @@ body {
     transform: translateY(0);
 }
 
+.schedule-day .stream-thumb {
+    display: grid;
+    place-items: center;
+    min-height: 46px;
+    height: 46px;
+    overflow: hidden;
+}
+.schedule-day .stream-thumb img {
+    display: block;
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 100%;
+    object-fit: contain;
+    opacity: .88;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .links > .link {
         opacity: 1;
