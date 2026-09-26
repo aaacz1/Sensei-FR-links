@@ -48,7 +48,6 @@ jobs:
           )
 
           livestream = response.get("livestream")
-
           is_live = (
               isinstance(livestream, dict)
               and livestream.get("is_live") is True
@@ -61,7 +60,20 @@ jobs:
           print(f"Kick live: {is_live}")
           PY
 
-      - name: Commit only when status changes
+      - name: Install schedule browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix .github/scripts --no-fund --no-audit
+          npx --prefix .github/scripts playwright install --with-deps chromium
+
+      - name: Update current week schedule
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .github/scripts/update-schedule.mjs
+
+      - name: Commit only when status or schedule changes
         shell: bash
         run: |
           set -euo pipefail
@@ -69,12 +81,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add kick-status.json
+          git add kick-status.json schedule.json
 
           if git diff --cached --quiet; then
-            echo "Kick status did not change."
+            echo "Kick status and schedule did not change."
             exit 0
           fi
 
-          git commit -m "Update Kick live status"
+          git commit -m "Update Kick status and schedule"
           git push
