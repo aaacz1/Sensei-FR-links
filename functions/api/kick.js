@@ -2,7 +2,8 @@ export async function onRequestGet() {
   try {
     const upstream = await fetch("https://kick.com/api/v2/channels/sensei_fr", {
       headers: { accept: "application/json", "user-agent": "SenseiFRStatus/1.0" },
-      cf: { cacheTtl: 60, cacheEverything: true }
+      cf: { cacheTtl: 60, cacheEverything: true },
+      signal: AbortSignal.timeout(8000)
     });
     if (!upstream.ok) throw new Error(`Kick returned ${upstream.status}`);
     const data = await upstream.json();
