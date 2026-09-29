@@ -1,7 +1,7 @@
 export async function onRequestGet() {
   try {
     const upstream = await fetch("https://kick.com/api/v2/channels/sensei_fr", {
-      headers: { accept: "application/json", "user-agent": "SenseiFRStatus/1.0" },
+      headers: { accept: "application/json", "user-agent": "Mozilla/5.0", origin: "https://kick.com", referer: "https://kick.com/" },
       cf: { cacheTtl: 60, cacheEverything: true },
       signal: AbortSignal.timeout(8000)
     });
