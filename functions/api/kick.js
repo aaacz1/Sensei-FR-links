@@ -27,7 +27,8 @@ export async function onRequestGet() {
       checkedAt,
       url: "https://kick.com/sensei_fr"
     }, { headers: { "cache-control": "public, max-age=15, s-maxage=20" } });
-  } catch {
+  } catch (error) {
+    console.error("[api/kick] upstream check failed:", error instanceof Error ? error.message : String(error));
     return Response.json({
       available: false, live: null, checkedAt, url: "https://kick.com/sensei_fr"
     }, { status:503, headers: { "cache-control":"no-store" } });
