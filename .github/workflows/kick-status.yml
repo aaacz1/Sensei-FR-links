@@ -1,0 +1,91 @@
+name: Kick live status
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/kick-status.yml"
+      - "functions/api/kick.js"
+      - "index.html"
+  workflow_dispatch:
+
+permissions:
+  checks: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Kick channel
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import datetime
+          import json
+          import urllib.error
+          import urllib.request
+
+          now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+          payload = {"available": False, "live": None, "checkedAt": now}
+          request = urllib.request.Request(
+              "https://kick.com/api/v2/channels/sensei_fr",
+              headers={
+                  "Accept": "application/json",
+                  "User-Agent": "Mozilla/5.0",
+                  "Origin": "https://kick.com",
+                  "Referer": "https://kick.com/",
+              },
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=12) as response:
+                  data = json.load(response)
+              if not isinstance(data, dict) or "livestream" not in data:
+                  raise ValueError("Unexpected Kick response")
+              stream = data["livestream"]
+              if stream is not None and (
+                  not isinstance(stream, dict) or not isinstance(stream.get("is_live"), bool)
+              ):
+                  raise ValueError("Unexpected livestream response")
+              payload = {"available": True, "live": bool(stream and stream.get("is_live") is True), "checkedAt": now}
+          except Exception as error:
+              payload["error"] = str(error)[:180]
+
+          with open("/tmp/kick-status.json", "w", encoding="utf-8") as output:
+              json.dump(payload, output, ensure_ascii=False)
+          print(json.dumps(payload, ensure_ascii=False))
+          PY
+      - name: Publish result for the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path("/tmp/kick-status.json").read_text(encoding="utf-8"))
+          now = payload["checkedAt"]
+          available = payload.get("available") is True and isinstance(payload.get("live"), bool)
+          live = payload.get("live") is True if available else None
+          title = "Kick is live" if available and live else "Kick is offline" if available else "Kick status unavailable"
+          output = {
+              "title": title,
+              "summary": json.dumps(payload, ensure_ascii=False),
+          }
+          check = {
+              "name": "Kick live status",
+              "head_sha": os.environ["GITHUB_SHA"],
+              "status": "completed",
+              "conclusion": "success" if available else "failure",
+              "started_at": now,
+              "completed_at": now,
+              "output": output,
+          }
+          Path("/tmp/kick-check.json").write_text(json.dumps(check, ensure_ascii=False), encoding="utf-8")
+          PY
+          gh api --method POST "/repos/${GITHUB_REPOSITORY}/check-runs" --input /tmp/kick-check.json
