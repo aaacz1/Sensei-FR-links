@@ -3550,6 +3550,15 @@ body { background: #080914; }
     #main.intro-visible > .site-tab-panel.active { animation: none; }
     .site-tab-button, .schedule-day, .schedule-link { transition: none; }
 }
+
+.youtube-panel { direction:rtl; }
+.youtube-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.youtube-actions .clips-state { margin:0; }
+.youtube-actions button { cursor:pointer; font:inherit; }
+.youtube-actions button:disabled { opacity:.55; cursor:wait; }
+.status-refresh { margin-inline-start:8px; padding:2px 7px; border:1px solid rgba(255,255,255,.2); border-radius:8px; background:rgba(255,255,255,.07); color:inherit; cursor:pointer; }
+.status-refresh:focus-visible, .youtube-actions a:focus-visible, .youtube-actions button:focus-visible, .clip-card:focus-visible { outline:2px solid #8fffb9; outline-offset:3px; }
+@media(max-width:520px) { .youtube-actions > * { flex:1 1 auto; text-align:center; } }
 </style>
 
 </head>
@@ -3620,6 +3629,7 @@ body { background: #080914; }
         <button class="site-tab-button" type="button" data-site-tab="schedule">SCHEDULE</button>
         <button class="site-tab-button" type="button" data-site-tab="emojis">EMOTES</button>
         <button class="site-tab-button" type="button" data-site-tab="clips">CLIPS</button>
+        <button class="site-tab-button" type="button" data-site-tab="youtube">YOUTUBE</button>
     </nav>
 
     <div
@@ -3714,6 +3724,7 @@ loadAnnouncement();</script>
             <span id="statusText">
                 CHECKING...
             </span>
+            <button class="status-refresh" id="kickRefresh" type="button" aria-label="רענון מצב שידור Kick">↻</button>
 
         </div>
 
@@ -3856,6 +3867,7 @@ loadAnnouncement();</script>
 
                 <div class="link-text">
                     TikTok
+                    <span class="link-subtext">לא ניתן לבדוק סטטוס דרך API ציבורי מורשה</span>
                 </div>
 
                 <div class="link-arrow">
@@ -4010,6 +4022,13 @@ loadAnnouncement();</script>
         </div>
     </section>
 
+    <section class="clips-panel youtube-panel site-tab-panel" aria-labelledby="youtubeTitle" data-site-panel="youtube">
+        <div class="clips-heading"><div><h2 class="clips-title" id="youtubeTitle">הסרטונים של סנסיי</h2><p class="clips-description">חמשת הסרטונים האחרונים בערוץ YouTube</p></div>
+            <div class="youtube-actions"><span class="clips-state" id="youtubeLastChecked" aria-live="polite">עדיין לא נבדק</span><button class="clips-kick-link" id="youtubeRefresh" type="button">רענון</button><a class="clips-kick-link" href="https://www.youtube.com/@senseifr-livestream" target="_blank" rel="noopener noreferrer">לערוץ YouTube</a></div>
+        </div>
+        <div class="clips-grid" id="youtubeGrid" aria-live="polite" aria-busy="true"><p class="clips-state">טוען סרטונים…</p></div>
+    </section>
+
 </main>
 
 
@@ -4055,7 +4074,7 @@ const introSplash =
 ========================================================= */
 
 function applySiteTab(selectedTab) {
-    const validTab = ["links", "bit", "schedule", "emojis", "clips"].includes(selectedTab)
+    const validTab = ["links", "bit", "schedule", "emojis", "clips", "youtube"].includes(selectedTab)
         ? selectedTab
         : "links";
 
@@ -4224,30 +4243,16 @@ async function updateScheduleMessage() {
     if (!scheduleMessage) return;
 
     try {
-        const [statusResponse, scheduleResponse] = await Promise.all([
-            fetch("kick-status.json?t=" + Date.now(), { cache: "no-store" }),
-            fetch("schedule.json?t=" + Date.now(), { cache: "no-store" })
-        ]);
+        const scheduleResponse = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" });
+        if (!scheduleResponse.ok) throw new Error("Schedule file unavailable");
+        const schedule = await scheduleResponse.json();
 
-        if (!statusResponse.ok) throw new Error("Status file unavailable");
-
-        const data = await statusResponse.json();
-        if (scheduleResponse.ok) {
-            const schedule = await scheduleResponse.json();
-
-            if (Array.isArray(schedule.streams)) {
-                scheduledStreams = [...schedule.streams];
-
-            }
-
-            if (Array.isArray(schedule.emptyDays)) {
-                noStreamDays = schedule.emptyDays;
-            }
-        }
-
-        renderSchedule(data);
-    } catch {
+        if (Array.isArray(schedule.streams)) scheduledStreams = [...schedule.streams];
+        if (Array.isArray(schedule.emptyDays)) noStreamDays = schedule.emptyDays;
         renderSchedule({ live: false });
+    } catch {
+        scheduleMessage.textContent = "לוח השידורים כרגע לא זמין";
+        renderScheduleBoard();
     }
 }
 
@@ -4322,101 +4327,109 @@ logoButton.addEventListener(
    KICK STATUS
 ========================================================= */
 
+let kickStatusLoading = false;
 async function updateKickStatus() {
-
+    if (document.hidden || kickStatusLoading) return;
+    kickStatusLoading = true;
+    statusText.textContent = "CHECKING…";
+    statusDot.dataset.state = "loading";
     try {
-
-        const response =
-            await fetch(
-                "kick-status.json?t=" +
-                Date.now(),
-                {
-                    cache: "no-store"
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Status file unavailable"
-            );
-
+        const response = await fetch("/api/kick?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("Kick status unavailable");
+        const data = await response.json();
+        if (data.available !== true || typeof data.live !== "boolean") throw new Error("Kick status unavailable");
+        if (data.live) {
+            statusText.textContent = "ONLINE";
+            statusDot.dataset.state = "live";
+            statusDot.style.background = "#fff";
+            statusDot.style.color = "#fff";
+            statusDot.style.boxShadow = "0 0 12px rgba(255,255,255,.9)";
+        } else {
+            statusText.textContent = "OFFLINE";
+            statusDot.dataset.state = "offline";
+            statusDot.style.background = "#666";
+            statusDot.style.color = "#777";
+            statusDot.style.boxShadow = "0 0 8px rgba(255,255,255,.2)";
         }
-
-        const data =
-            await response.json();
-
-
-        /* ONLINE */
-
-        if (data.live === true) {
-
-            statusText.textContent =
-                "ONLINE";
-
-            statusDot.style.background =
-                "#ffffff";
-
-            statusDot.style.color =
-                "#ffffff";
-
-            statusDot.style.boxShadow =
-                "0 0 12px rgba(255,255,255,.9)";
-
-        }
-
-
-        /* OFFLINE */
-
-        else {
-
-            statusText.textContent =
-                "OFFLINE";
-
-            statusDot.style.background =
-                "#666";
-
-            statusDot.style.color =
-                "#777";
-
-            statusDot.style.boxShadow =
-                "0 0 8px rgba(255,255,255,.2)";
-
-        }
-
-    }
-
-
-    /* ERROR */
-
-    catch (error) {
-
-        statusText.textContent =
-            "OFFLINE";
-
-        statusDot.style.background =
-            "#555";
-
-        statusDot.style.color =
-            "#555";
-
-    }
-
+    } catch {
+        statusText.textContent = "STATUS UNAVAILABLE";
+        statusDot.dataset.state = "unavailable";
+        statusDot.style.background = "#555";
+        statusDot.style.color = "#555";
+    } finally { kickStatusLoading = false; }
 }
-
-
-/* Initial check */
-
 updateKickStatus();
+document.getElementById("kickRefresh")?.addEventListener("click", updateKickStatus);
+setInterval(updateKickStatus, 60000);
 
-
-/* Check every 15 seconds */
-
-setInterval(
-    updateKickStatus,
-    15000
-);
-
+const youtubeGrid = document.getElementById("youtubeGrid");
+const youtubeRefresh = document.getElementById("youtubeRefresh");
+const youtubeLastChecked = document.getElementById("youtubeLastChecked");
+let youtubeLoading = false;
+function showYoutubeState(message) {
+    const state = document.createElement("p");
+    state.className = "clips-state";
+    state.textContent = message;
+    youtubeGrid.replaceChildren(state);
+    youtubeGrid.setAttribute("aria-busy", "false");
+}
+async function updateYouTubeVideos(forceRefresh = false) {
+    if (!youtubeGrid || youtubeLoading || document.hidden) return;
+    youtubeLoading = true;
+    youtubeRefresh.disabled = true;
+    youtubeLastChecked.textContent = "נבדק עכשיו…";
+    youtubeGrid.setAttribute("aria-busy", "true");
+    showYoutubeState("טוען סרטונים…");
+    youtubeGrid.setAttribute("aria-busy", "true");
+    try {
+        const response = await fetch("/api/youtube" + (forceRefresh ? "?refresh=1" : ""), { cache: "no-store" });
+        if (!response.ok) throw new Error("Feed unavailable");
+        const data = await response.json();
+        if (data.fetchedAt) youtubeLastChecked.textContent = "נבדק " + new Date(data.fetchedAt).toLocaleString("he-IL");
+        if (data.status === "unconfigured") { showYoutubeState("הסרטונים עדיין לא הוגדרו. אפשר לצפות בערוץ YouTube."); return; }
+        if (data.status !== "ok") { showYoutubeState("לא ניתן לטעון את הסרטונים כרגע. נסו שוב מאוחר יותר."); return; }
+        if (!Array.isArray(data.videos) || !data.videos.length) { showYoutubeState("עדיין אין סרטונים להצגה."); return; }
+        const cards = data.videos.slice(0, 5).map((video) => {
+            const card = document.createElement("a");
+            card.className = "clip-card";
+            card.href = "https://www.youtube.com/watch?v=" + encodeURIComponent(video.id);
+            card.target = "_blank";
+            card.rel = "noopener noreferrer";
+            card.setAttribute("aria-label", "לצפייה ב-YouTube: " + (video.title || "סרטון"));
+            const thumb = document.createElement("div");
+            thumb.className = "clip-thumb";
+            if (video.thumbnail) {
+                const image = document.createElement("img");
+                image.src = video.thumbnail;
+                image.alt = "";
+                image.loading = "lazy";
+                image.onerror = () => image.remove();
+                thumb.append(image);
+            }
+            const info = document.createElement("div");
+            info.className = "clip-info";
+            const title = document.createElement("strong");
+            title.className = "clip-title";
+            title.textContent = video.title || "סרטון YouTube";
+            const date = document.createElement("span");
+            date.className = "clip-open-label";
+            date.textContent = video.publishedAt ? new Date(video.publishedAt).toLocaleDateString("he-IL") : "פתיחה ב-YouTube";
+            info.append(title, date);
+            card.append(thumb, info);
+            return card;
+        });
+        youtubeGrid.replaceChildren(...cards);
+        youtubeGrid.setAttribute("aria-busy", "false");
+    } catch {
+        showYoutubeState("לא ניתן לטעון את הסרטונים כרגע. נסו שוב מאוחר יותר.");
+    } finally { youtubeLoading = false; youtubeRefresh.disabled = false; }
+}
+youtubeRefresh?.addEventListener("click", () => updateYouTubeVideos(true));
+updateYouTubeVideos();
+setInterval(updateYouTubeVideos, 30 * 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) { updateKickStatus(); updateYouTubeVideos(); }
+});
 
 /* =========================================================
    PARTICLES
