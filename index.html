@@ -4319,7 +4319,38 @@ logoButton.addEventListener(
 
 let kickStatusLoading = false;
 let lastKickAttempt = 0;
-async function updateKickStatus() {
+let githubKickCache = null;
+let githubKickCacheAt = 0;
+
+async function readGithubKickStatus(forceRefresh = false) {
+    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 90000) {
+        return githubKickCache;
+    }
+    const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/check-runs?check_name=Kick%20live%20status&filter=latest&per_page=100";
+    const response = await fetch(apiUrl, {
+        cache: "no-store",
+        headers: { "Accept": "application/vnd.github+json" },
+        signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) throw new Error("GitHub status unavailable");
+    const result = await response.json();
+    const checks = Array.isArray(result.check_runs) ? result.check_runs : [];
+    const check = checks
+        .filter((item) => item.name === "Kick live status" && item.completed_at && item.output?.summary)
+        .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))[0];
+    if (!check || check.conclusion !== "success") throw new Error("No successful recent GitHub check");
+    const checkedAt = new Date(check.completed_at);
+    if (Number.isNaN(checkedAt.getTime()) || Date.now() - checkedAt.getTime() > 12 * 60 * 1000) {
+        throw new Error("GitHub status is stale");
+    }
+    const data = JSON.parse(check.output.summary);
+    if (data.available !== true || typeof data.live !== "boolean") throw new Error("Invalid GitHub status");
+    githubKickCache = { live: data.live, checkedAt: checkedAt.toISOString() };
+    githubKickCacheAt = Date.now();
+    return githubKickCache;
+}
+
+async function updateKickStatus(forceGithubRefresh = false) {
     if (document.hidden || kickStatusLoading) return;
     kickStatusLoading = true;
     lastKickAttempt = Date.now();
@@ -4330,22 +4361,30 @@ async function updateKickStatus() {
     statusDot.style.color = "";
     statusDot.style.boxShadow = "";
     try {
-        const response = await fetch("/api/kick", {
-            cache: "no-store",
-            headers: { "Accept": "application/json" },
-            signal: AbortSignal.timeout(10000)
-        });
-        if (!response.ok) throw new Error("Kick status unavailable");
-        const data = await response.json();
-        if (data.available !== true || typeof data.live !== "boolean") throw new Error("Kick status unavailable");
-        statusText.title = data.checkedAt
-            ? "נבדק " + new Date(data.checkedAt).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
-            : "";
+        let data;
+        let source = "Cloudflare";
+        try {
+            const response = await fetch("/api/kick", {
+                cache: "no-store",
+                headers: { "Accept": "application/json" },
+                signal: AbortSignal.timeout(8000)
+            });
+            if (!response.ok) throw new Error("Cloudflare status unavailable");
+            data = await response.json();
+            if (data.available !== true || typeof data.live !== "boolean") throw new Error("Cloudflare status unavailable");
+        } catch {
+            data = await readGithubKickStatus(forceGithubRefresh);
+            source = "GitHub";
+        }
+        statusText.title = (source === "GitHub" ? "גיבוי מ־GitHub · " : "") +
+            (data.checkedAt
+                ? "נבדק " + new Date(data.checkedAt).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
+                : "");
         statusText.textContent = data.live ? "LIVE NOW" : "OFFLINE";
         statusDot.dataset.state = data.live ? "live" : "offline";
     } catch {
         statusText.textContent = "STATUS UNAVAILABLE";
-        statusText.title = "בדיקת מצב השידור נכשלה. אפשר לנסות שוב או לפתוח את Kick.";
+        statusText.title = "בדיקת Kick ו־GitHub נכשלה או שהתוצאה ישנה. אפשר לפתוח את Kick.";
         statusDot.dataset.state = "unavailable";
     } finally {
         kickStatusLoading = false;
@@ -4355,7 +4394,7 @@ async function updateKickStatus() {
 updateKickStatus();
 kickRefresh?.addEventListener("click", () => {
     if (Date.now() - lastKickAttempt < 5000) return;
-    updateKickStatus();
+    updateKickStatus(true);
 });
 setInterval(updateKickStatus, 60000);
 document.addEventListener("visibilitychange", () => {
