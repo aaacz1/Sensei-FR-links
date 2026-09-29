@@ -1277,6 +1277,88 @@ body {
 }
 
 
+const tiktokGrid = document.getElementById("tiktokGrid");
+const tiktokRefresh = document.getElementById("tiktokRefresh");
+const tiktokLastChecked = document.getElementById("tiktokLastChecked");
+let tiktokLoading = false;
+function showTikTokState(message) {
+    const state = document.createElement("p");
+    state.className = "clips-state";
+    state.textContent = message;
+    tiktokGrid.replaceChildren(state);
+    tiktokGrid.setAttribute("aria-busy", "false");
+}
+async function updateTikTokVideos(forceRefresh = false) {
+    if (!tiktokGrid || tiktokLoading || document.hidden) return;
+    tiktokLoading = true;
+    tiktokRefresh.disabled = true;
+    tiktokLastChecked.textContent = "נבדק עכשיו…";
+    tiktokGrid.setAttribute("aria-busy", "true");
+    showTikTokState("טוען סרטונים…");
+    tiktokGrid.setAttribute("aria-busy", "true");
+    try {
+        const response = await fetch("/api/tiktok" + (forceRefresh ? "?refresh=1" : ""), {
+            cache: "no-store", signal: AbortSignal.timeout(12000)
+        });
+        if (!response.ok) throw new Error("TikTok feed unavailable");
+        const data = await response.json();
+        if (data.fetchedAt) tiktokLastChecked.textContent = "נבדק " + new Date(data.fetchedAt).toLocaleString("he-IL");
+        if (data.status === "unconfigured") {
+            showTikTokState("הצגת סרטונים דורשת חיבור מורשה ל-TikTok. אפשר לצפות בפרופיל.");
+            return;
+        }
+        if (data.status !== "ok") {
+            showTikTokState("לא ניתן לטעון סרטונים כרגע. אפשר לפתוח את פרופיל TikTok.");
+            return;
+        }
+        const videos = Array.isArray(data.videos) ? data.videos.slice(0, 5) : [];
+        if (!videos.length) { showTikTokState("לא נמצאו סרטונים אחרונים. אפשר לפתוח את פרופיל TikTok."); return; }
+        const cards = videos.map((video) => {
+            const card = document.createElement("a");
+            card.className = "clip-card";
+            const validUrl = typeof video.shareUrl === "string" && /^https:\/\/(www\.)?tiktok\.com\//i.test(video.shareUrl);
+            card.href = validUrl ? video.shareUrl : "https://www.tiktok.com/@sense1_fr";
+            card.target = "_blank";
+            card.rel = "noopener noreferrer";
+            card.setAttribute("aria-label", "לצפייה ב-TikTok: " + (video.title || "סרטון"));
+            const thumb = document.createElement("div");
+            thumb.className = "clip-thumb";
+            if (video.thumbnail) {
+                const image = document.createElement("img");
+                image.src = video.thumbnail;
+                image.alt = "";
+                image.loading = "lazy";
+                image.onerror = () => image.remove();
+                thumb.append(image);
+            }
+            const info = document.createElement("div");
+            info.className = "clip-info";
+            const title = document.createElement("strong");
+            title.className = "clip-title";
+            title.textContent = video.title || "סרטון TikTok";
+            const date = document.createElement("span");
+            date.className = "clip-open-label";
+            date.textContent = video.createdAt ? new Date(video.createdAt).toLocaleDateString("he-IL") : "פתיחה ב-TikTok";
+            info.append(title, date);
+            card.append(thumb, info);
+            return card;
+        });
+        tiktokGrid.replaceChildren(...cards);
+        tiktokGrid.setAttribute("aria-busy", "false");
+    } catch {
+        showTikTokState("לא ניתן לטעון סרטונים כרגע. אפשר לפתוח את פרופיל TikTok.");
+    } finally {
+        tiktokLoading = false;
+        tiktokRefresh.disabled = false;
+    }
+}
+tiktokRefresh?.addEventListener("click", () => updateTikTokVideos(true));
+if (window.location.hash === "#tiktok") updateTikTokVideos();
+setInterval(updateTikTokVideos, 10 * 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && window.location.hash === "#tiktok") updateTikTokVideos();
+});
+
 /* =========================================================
    PARTICLES
 ========================================================= */
@@ -3551,6 +3633,14 @@ body { background: #080914; }
     .site-tab-button, .schedule-day, .schedule-link { transition: none; }
 }
 
+
+.tiktok-panel { direction:rtl; }
+.tiktok-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.tiktok-actions .clips-state { margin:0; }
+.tiktok-actions button { cursor:pointer; font:inherit; }
+.tiktok-actions button:disabled { opacity:.55; cursor:wait; }
+.tiktok-actions a:focus-visible, .tiktok-actions button:focus-visible, .clip-card:focus-visible { outline:2px solid #8fffb9; outline-offset:3px; }
+@media(max-width:520px) { .tiktok-actions > * { flex:1 1 auto; text-align:center; } }
 </style>
 
 </head>
@@ -3621,6 +3711,7 @@ body { background: #080914; }
         <button class="site-tab-button" type="button" data-site-tab="schedule">SCHEDULE</button>
         <button class="site-tab-button" type="button" data-site-tab="emojis">EMOTES</button>
         <button class="site-tab-button" type="button" data-site-tab="clips">CLIPS</button>
+        <button class="site-tab-button" type="button" data-site-tab="tiktok">TIKTOK</button>
     </nav>
 
     <div
@@ -4015,6 +4106,18 @@ loadAnnouncement();</script>
 
 
 
+    <section class="clips-panel tiktok-panel site-tab-panel" aria-labelledby="tiktokTitle" data-site-panel="tiktok">
+        <div class="clips-heading">
+            <div><h2 class="clips-title" id="tiktokTitle">הטיקטוקים החדשים של סנסיי</h2><p class="clips-description">חמשת הסרטונים האחרונים שעלו</p></div>
+            <div class="tiktok-actions">
+                <span class="clips-state" id="tiktokLastChecked" aria-live="polite">עדיין לא נבדק</span>
+                <button class="clips-kick-link" id="tiktokRefresh" type="button">רענון</button>
+                <a class="clips-kick-link" href="https://www.tiktok.com/@sense1_fr" target="_blank" rel="noopener noreferrer">לפרופיל TikTok</a>
+            </div>
+        </div>
+        <div class="clips-grid" id="tiktokGrid" aria-live="polite" aria-busy="true"><p class="clips-state">טוען סרטונים…</p></div>
+    </section>
+
 </main>
 
 
@@ -4060,7 +4163,7 @@ const introSplash =
 ========================================================= */
 
 function applySiteTab(selectedTab) {
-    const validTab = ["links", "bit", "schedule", "emojis", "clips"].includes(selectedTab)
+    const validTab = ["links", "bit", "schedule", "emojis", "clips", "tiktok"].includes(selectedTab)
         ? selectedTab
         : "links";
 
