@@ -73,10 +73,10 @@ jobs:
         run: |
           DESCRIPTION="$(cat /tmp/kick-status.txt)"
           RESULT="${DESCRIPTION%%|*}"
-          if [ "$RESULT" = "OFFLINE" ]; then
-            STATE="success"
-          else
+          if [ "$RESULT" = "UNAVAILABLE" ]; then
             STATE="failure"
+          else
+            STATE="success"
           fi
           gh api --method POST "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" \
