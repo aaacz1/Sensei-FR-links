@@ -4348,7 +4348,7 @@ async function readGithubKickStatus(forceRefresh = false) {
     if (Number.isNaN(reportedAt.getTime()) || Math.abs(checkedAt.getTime() - reportedAt.getTime()) > 2 * 60 * 1000) {
         throw new Error("GitHub status timestamp mismatch");
     }
-    if (match[1] === "UNAVAILABLE" || status.state !== "success" && match[1] === "LIVE") {
+    if (match[1] === "UNAVAILABLE" || status.state !== "success") {
         throw new Error("Kick status check failed");
     }
     githubKickCache = { live: match[1] === "LIVE", checkedAt: reportedAt.toISOString() };
