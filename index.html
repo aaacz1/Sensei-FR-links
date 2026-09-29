@@ -12,12 +12,13 @@
 <meta name="theme-color" content="#080914">
 <meta name="description" content="כל הקישורים, לוח השידורים והקליפים של Sensei FR.">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
 <meta property="og:title" content="Sensei FR • Official Links">
 <meta property="og:description" content="כל הקישורים, לוח השידורים והקליפים של Sensei FR.">
 <meta property="og:url" content="https://senseifr.de5.net/">
 <meta property="og:image" content="https://senseifr.de5.net/logo.png">
 <meta property="og:image:alt" content="הלוגו של Sensei FR">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sensei FR • Official Links">
 <meta name="twitter:description" content="כל הקישורים, לוח השידורים והקליפים של Sensei FR.">
 <meta name="twitter:image" content="https://senseifr.de5.net/logo.png">
@@ -3508,6 +3509,7 @@ body { background: #080914; }
 }
 .site-tab-button { transition: color .25s, background .25s, border-color .25s, transform .25s; }
 .site-tab-button:hover { transform: translateY(-2px); }
+.site-tab-button.active { border-color:rgba(151,220,245,.82); background:linear-gradient(135deg,rgba(116,112,209,.48),rgba(29,134,145,.42)); color:#fff; font-weight:900; box-shadow:0 8px 24px rgba(69,142,190,.18),inset 0 1px 0 rgba(255,255,255,.2); }
 
 @keyframes contentFade {
     from { opacity: 0; transform: translateY(22px); filter: blur(5px); }
@@ -3747,7 +3749,7 @@ html[data-reduced-motion="true"] *::after {
 </div>
 
 
-<button class="accessibility-trigger" id="accessibilityTrigger" type="button" aria-haspopup="dialog" aria-controls="accessibilityDialog">
+<button class="accessibility-trigger" id="accessibilityTrigger" type="button" aria-label="פתיחת הגדרות נגישות" aria-haspopup="dialog" aria-controls="accessibilityDialog">
     <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
     <span>נגישות</span>
 </button>
@@ -4145,7 +4147,7 @@ loadAnnouncement();</script>
     <fieldset class="accessibility-options">
         <legend>הגדרות תצוגה</legend>
         <label class="accessibility-option">
-            <span><strong>טקסט גדול יותר</strong><small>הגדלת הטקסט והמרווחים באתר</small></span>
+            <span><strong>טקסט גדול יותר</strong><small>הגדלת טקסט בטאבים ובתוכן</small></span>
             <input type="checkbox" id="accessibilityLargeText">
         </label>
         <label class="accessibility-option">
@@ -4212,12 +4214,21 @@ const accessibilitySettings = {
 };
 const accessibilityStorageKey = "sensei-fr-accessibility-v1";
 
+function getDefaultAccessibilitySettings() {
+    return {
+        largeText: false,
+        highContrast: false,
+        reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    };
+}
+
 function applyAccessibilitySettings(settings) {
-    document.documentElement.dataset.largeText = String(settings.largeText === true);
-    document.documentElement.dataset.highContrast = String(settings.highContrast === true);
-    document.documentElement.dataset.reducedMotion = String(settings.reducedMotion === true);
+    const preferences = { ...getDefaultAccessibilitySettings(), ...settings };
+    document.documentElement.dataset.largeText = String(preferences.largeText === true);
+    document.documentElement.dataset.highContrast = String(preferences.highContrast === true);
+    document.documentElement.dataset.reducedMotion = String(preferences.reducedMotion === true);
     Object.entries(accessibilitySettings).forEach(([key, input]) => {
-        input.checked = settings[key] === true;
+        input.checked = preferences[key] === true;
     });
 }
 
@@ -4244,10 +4255,13 @@ Object.values(accessibilitySettings).forEach((input) => {
     input.addEventListener("change", saveAccessibilitySettings);
 });
 accessibilityTrigger.addEventListener("click", () => accessibilityDialog.showModal());
+accessibilityDialog.addEventListener("click", (event) => {
+    if (event.target === accessibilityDialog) accessibilityDialog.close();
+});
 accessibilityClose.addEventListener("click", () => accessibilityDialog.close());
 accessibilityDone.addEventListener("click", () => accessibilityDialog.close());
 accessibilityReset.addEventListener("click", () => {
-    applyAccessibilitySettings({});
+    applyAccessibilitySettings(getDefaultAccessibilitySettings());
     try {
         localStorage.removeItem(accessibilityStorageKey);
     } catch {
