@@ -4323,10 +4323,10 @@ let githubKickCache = null;
 let githubKickCacheAt = 0;
 
 async function readGithubKickStatus(forceRefresh = false) {
-    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 90000) {
+    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 60000) {
         return githubKickCache;
     }
-    const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/check-runs?check_name=Kick%20live%20status&filter=latest&per_page=100";
+    const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
     const response = await fetch(apiUrl, {
         cache: "no-store",
         headers: { "Accept": "application/vnd.github+json" },
@@ -4334,18 +4334,24 @@ async function readGithubKickStatus(forceRefresh = false) {
     });
     if (!response.ok) throw new Error("GitHub status unavailable");
     const result = await response.json();
-    const checks = Array.isArray(result.check_runs) ? result.check_runs : [];
-    const check = checks
-        .filter((item) => item.name === "Kick live status" && item.completed_at && item.output?.summary)
-        .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))[0];
-    if (!check || check.conclusion !== "success") throw new Error("No successful recent GitHub check");
-    const checkedAt = new Date(check.completed_at);
+    const status = (Array.isArray(result.statuses) ? result.statuses : [])
+        .filter((item) => item.context === "kick/live-status")
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    if (!status || !status.created_at || !status.description) throw new Error("No GitHub status yet");
+    const checkedAt = new Date(status.created_at);
     if (Number.isNaN(checkedAt.getTime()) || Date.now() - checkedAt.getTime() > 12 * 60 * 1000) {
         throw new Error("GitHub status is stale");
     }
-    const data = JSON.parse(check.output.summary);
-    if (data.available !== true || typeof data.live !== "boolean") throw new Error("Invalid GitHub status");
-    githubKickCache = { live: data.live, checkedAt: checkedAt.toISOString() };
+    const match = status.description.match(/^(LIVE|OFFLINE|UNAVAILABLE)\|(.+)$/);
+    if (!match) throw new Error("Invalid GitHub status");
+    const reportedAt = new Date(match[2]);
+    if (Number.isNaN(reportedAt.getTime()) || Math.abs(checkedAt.getTime() - reportedAt.getTime()) > 2 * 60 * 1000) {
+        throw new Error("GitHub status timestamp mismatch");
+    }
+    if (match[1] === "UNAVAILABLE" || status.state !== "success" && match[1] === "LIVE") {
+        throw new Error("Kick status check failed");
+    }
+    githubKickCache = { live: match[1] === "LIVE", checkedAt: reportedAt.toISOString() };
     githubKickCacheAt = Date.now();
     return githubKickCache;
 }
@@ -4372,6 +4378,10 @@ async function updateKickStatus(forceGithubRefresh = false) {
             if (!response.ok) throw new Error("Cloudflare status unavailable");
             data = await response.json();
             if (data.available !== true || typeof data.live !== "boolean") throw new Error("Cloudflare status unavailable");
+            const checkedAt = new Date(data.checkedAt);
+            if (Number.isNaN(checkedAt.getTime()) || Date.now() - checkedAt.getTime() > 12 * 60 * 1000) {
+                throw new Error("Cloudflare status is stale");
+            }
         } catch {
             data = await readGithubKickStatus(forceGithubRefresh);
             source = "GitHub";
