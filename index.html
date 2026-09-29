@@ -3559,10 +3559,7 @@ body { background: #080914; }
 .status-dot[data-state="live"] { background:#65f2aa; color:#65f2aa; box-shadow:0 0 13px rgba(101,242,170,.9); }
 .status-dot[data-state="offline"] { background:#9297a4; color:#9297a4; box-shadow:0 0 8px rgba(146,151,164,.35); }
 .status-dot[data-state="unavailable"] { background:#ff8e8e; color:#ff8e8e; box-shadow:0 0 10px rgba(255,142,142,.55); }
-.status-refresh { display:grid; place-items:center; width:27px; height:27px; flex:none; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.07); color:#fff; font:700 17px/1 "Inter",sans-serif; cursor:pointer; transition:transform .2s ease,background .2s ease,border-color .2s ease; }
-.status-refresh:hover { transform:rotate(35deg); border-color:rgba(126,231,226,.6); background:rgba(42,75,91,.58); }
-.status-refresh:disabled { opacity:.55; cursor:wait; }
-.status-refresh:focus-visible,.site-tab-button:focus-visible,.link:focus-visible,.clips-kick-link:focus-visible,.clip-card:focus-visible { outline:2px solid #8fffb9; outline-offset:3px; }
+.site-tab-button:focus-visible,.link:focus-visible,.clips-kick-link:focus-visible,.clip-card:focus-visible { outline:2px solid #8fffb9; outline-offset:3px; }
 .clip-card { display:flex; flex-direction:column; }
 .clip-thumb img { display:block; }
 .clip-info { flex:1; }
@@ -3576,7 +3573,7 @@ body { background: #080914; }
 }
 @media (prefers-reduced-motion:reduce) {
  .status-dot[data-state="loading"] { animation:none; }
- .status-refresh,.clip-card,.site-tab-button,.clips-kick-link { transition:none; }
+ .clip-card,.site-tab-button,.clips-kick-link { transition:none; }
 }
 
 </style>
@@ -3740,10 +3737,9 @@ loadAnnouncement();</script>
                 id="statusDot"
             ></span>
 
-            <span id="statusText" aria-live="polite" aria-atomic="true">
+            <span id="statusText" role="status" aria-live="polite" aria-atomic="true">
                 CHECKING...
             </span>
-            <button class="status-refresh" id="kickRefresh" type="button" aria-label="רענון מצב שידור Kick" title="רענון מצב שידור">↻</button>
 
         </div>
 
@@ -4038,9 +4034,6 @@ const statusText =
 const statusDot =
     document.getElementById("statusDot");
 
-const kickRefresh =
-    document.getElementById("kickRefresh");
-
 const logoButton =
     document.getElementById("logoButton");
 
@@ -4318,12 +4311,11 @@ logoButton.addEventListener(
 ========================================================= */
 
 let kickStatusLoading = false;
-let lastKickAttempt = 0;
 let githubKickCache = null;
 let githubKickCacheAt = 0;
 
-async function readGithubKickStatus(forceRefresh = false) {
-    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 120000) {
+async function readGithubKickStatus() {
+    if (githubKickCache && Date.now() - githubKickCacheAt < 120000) {
         return githubKickCache;
     }
     const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
@@ -4356,11 +4348,9 @@ async function readGithubKickStatus(forceRefresh = false) {
     return githubKickCache;
 }
 
-async function updateKickStatus(forceGithubRefresh = false) {
+async function updateKickStatus() {
     if (document.hidden || kickStatusLoading) return;
     kickStatusLoading = true;
-    lastKickAttempt = Date.now();
-    if (kickRefresh) kickRefresh.disabled = true;
     statusText.textContent = "CHECKING…";
     statusDot.dataset.state = "loading";
     statusDot.style.background = "";
@@ -4383,7 +4373,7 @@ async function updateKickStatus(forceGithubRefresh = false) {
                 throw new Error("Cloudflare status is stale");
             }
         } catch {
-            data = await readGithubKickStatus(forceGithubRefresh);
+            data = await readGithubKickStatus();
             source = "GitHub";
         }
         statusText.title = (source === "GitHub" ? "גיבוי מ־GitHub · " : "") +
@@ -4398,14 +4388,9 @@ async function updateKickStatus(forceGithubRefresh = false) {
         statusDot.dataset.state = "unavailable";
     } finally {
         kickStatusLoading = false;
-        if (kickRefresh) kickRefresh.disabled = false;
     }
 }
 updateKickStatus();
-kickRefresh?.addEventListener("click", () => {
-    if (Date.now() - lastKickAttempt < 5000) return;
-    updateKickStatus(true);
-});
 setInterval(updateKickStatus, 60000);
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateKickStatus();
@@ -4465,78 +4450,6 @@ for (
 }
 
 
-/* =========================================================
-   BASIC UI PROTECTION
-========================================================= */
-
-document.addEventListener(
-    "contextmenu",
-    event => event.preventDefault()
-);
-
-document.addEventListener(
-    "dragstart",
-    event => event.preventDefault()
-);
-
-document.addEventListener(
-    "selectstart",
-    event => event.preventDefault()
-);
-
-
-/* =========================================================
-   KEYBOARD PROTECTION
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-
-            /* F12 */
-
-            event.key === "F12"
-
-            ||
-
-            /* CTRL + SHIFT + I/J/C */
-
-            (
-                event.ctrlKey &&
-                event.shiftKey &&
-                [
-                    "I",
-                    "J",
-                    "C"
-                ].includes(
-                    event.key.toUpperCase()
-                )
-            )
-
-            ||
-
-            /* CTRL + U/S */
-
-            (
-                event.ctrlKey &&
-                [
-                    "U",
-                    "S"
-                ].includes(
-                    event.key.toUpperCase()
-                )
-            )
-
-        ) {
-
-            event.preventDefault();
-
-        }
-
-    }
-);
 /* Fade links in as they enter the viewport */
 const linkCards = document.querySelectorAll(".links > .link");
 if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
