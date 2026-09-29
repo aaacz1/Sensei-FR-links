@@ -12,23 +12,24 @@ on:
   workflow_dispatch:
 
 permissions:
-  checks: write
+  statuses: write
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - name: Check Kick channel
+        id: check
         shell: bash
         run: |
           python3 <<'PY'
           import datetime
           import json
-          import urllib.error
+          import time
           import urllib.request
 
-          now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-          payload = {"available": False, "live": None, "checkedAt": now}
+          checked_at = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+          result = "UNAVAILABLE"
           request = urllib.request.Request(
               "https://kick.com/api/v2/channels/sensei_fr",
               headers={
@@ -38,7 +39,6 @@ jobs:
                   "Referer": "https://kick.com/",
               },
           )
-          error = None
           for attempt in range(3):
               try:
                   with urllib.request.urlopen(request, timeout=12) as response:
@@ -50,50 +50,36 @@ jobs:
                       not isinstance(stream, dict) or not isinstance(stream.get("is_live"), bool)
                   ):
                       raise ValueError("Unexpected livestream response")
-                  payload = {"available": True, "live": bool(stream and stream.get("is_live") is True), "checkedAt": now}
+                  result = "LIVE" if stream and stream.get("is_live") is True else "OFFLINE"
                   break
-              except Exception as current_error:
-                  error = current_error
+              except Exception as error:
+                  print(f"Kick request attempt {attempt + 1} failed: {error}")
                   if attempt < 2:
-                      import time
                       time.sleep(2 * (attempt + 1))
-          if error is not None and payload["available"] is not True:
-              payload["error"] = str(error)[:180]
 
-          with open("/tmp/kick-status.json", "w", encoding="utf-8") as output:
-              json.dump(payload, output, ensure_ascii=False)
-          print(json.dumps(payload, ensure_ascii=False))
+          description = f"{result}|{checked_at}"
+          with open("/tmp/kick-status.txt", "w", encoding="utf-8") as output:
+              output.write(description)
+          print(f"Publishing {result} checked at {checked_at}")
           PY
-      - name: Publish result for the site
+      - name: Publish commit status
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         shell: bash
         run: |
-          python3 <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          payload = json.loads(Path("/tmp/kick-status.json").read_text(encoding="utf-8"))
-          now = payload["checkedAt"]
-          available = payload.get("available") is True and isinstance(payload.get("live"), bool)
-          live = payload.get("live") is True if available else None
-          title = "Kick is live" if available and live else "Kick is offline" if available else "Kick status unavailable"
-          output = {
-              "title": title,
-              "summary": json.dumps(payload, ensure_ascii=False),
-          }
-          check = {
-              "name": "Kick live status",
-              "head_sha": os.environ["GITHUB_SHA"],
-              "status": "completed",
-              "conclusion": "success" if available else "failure",
-              "started_at": now,
-              "completed_at": now,
-              "output": output,
-          }
-          Path("/tmp/kick-check.json").write_text(json.dumps(check, ensure_ascii=False), encoding="utf-8")
-          PY
-          gh api --method POST "/repos/${GITHUB_REPOSITORY}/check-runs" --input /tmp/kick-check.json
+          DESCRIPTION="$(cat /tmp/kick-status.txt)"
+          RESULT="${DESCRIPTION%%|*}"
+          if [ "$RESULT" = "OFFLINE" ]; then
+            STATE="success"
+          else
+            STATE="failure"
+          fi
+          gh api --method POST "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context="kick/live-status" \
+            -f description="$DESCRIPTION" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
