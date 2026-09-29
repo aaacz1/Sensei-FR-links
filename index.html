@@ -3592,105 +3592,6 @@ body { background: #080914; }
  .clip-card,.site-tab-button,.clips-kick-link { transition:none; }
 }
 
-/* Accessibility controls */
-.accessibility-trigger {
-    position: fixed;
-    z-index: 60;
-    top: max(14px, env(safe-area-inset-top));
-    right: max(14px, env(safe-area-inset-right));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    min-height: 46px;
-    padding: 0 16px;
-    border: 1px solid rgba(213, 211, 255, .34);
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(33, 38, 65, .94), rgba(13, 20, 35, .92));
-    color: #fff;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .13);
-    font: 800 13px "Heebo", sans-serif;
-    cursor: pointer;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: transform .2s ease, border-color .2s ease, background .2s ease;
-}
-.accessibility-trigger:hover { transform: translateY(-2px); border-color: #bcb2ff; background: rgba(42, 49, 79, .98); }
-.accessibility-trigger i { color: #b9efff; font-size: 17px; }
-.accessibility-trigger:focus-visible,
-.accessibility-dialog button:focus-visible,
-.accessibility-option input:focus-visible { outline: 3px solid #9ff6ff; outline-offset: 3px; }
-.accessibility-dialog {
-    width: min(470px, calc(100vw - 28px));
-    max-width: none;
-    max-height: min(86dvh, 680px);
-    overflow: auto;
-    margin: auto;
-    padding: clamp(20px, 5vw, 30px);
-    border: 1px solid rgba(195, 186, 255, .32);
-    border-radius: 24px;
-    background: linear-gradient(150deg, #181a2c, #0b101b 80%);
-    color: #fff;
-    box-shadow: 0 30px 100px rgba(0, 0, 0, .72), 0 0 50px rgba(131, 115, 255, .15);
-    font-family: "Heebo", sans-serif;
-}
-.accessibility-dialog::backdrop { background: rgba(3, 5, 12, .78); backdrop-filter: blur(8px); }
-.accessibility-dialog-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
-.accessibility-eyebrow { color:#b7c3ff; font:800 10px "Inter",sans-serif; letter-spacing:2px; }
-.accessibility-dialog h2 { margin:8px 0 4px; font-size:clamp(22px,5vw,27px); line-height:1.25; }
-.accessibility-dialog-head p { margin:0; color:#c1c5d6; font-size:15px; }
-.accessibility-close { flex:none; width:40px; height:40px; border:1px solid rgba(255,255,255,.18); border-radius:50%; background:rgba(255,255,255,.06); color:#fff; font-size:27px; line-height:1; cursor:pointer; }
-.accessibility-options { display:grid; gap:10px; margin:22px 0; padding:0; border:0; }
-.accessibility-options legend { margin-bottom:10px; color:#d5d1ff; font-size:15px; font-weight:800; }
-.accessibility-option { display:flex; align-items:center; justify-content:space-between; gap:15px; min-height:66px; padding:12px 14px; border:1px solid rgba(197,203,233,.17); border-radius:15px; background:rgba(255,255,255,.045); cursor:pointer; }
-.accessibility-option strong,.accessibility-option small { display:block; }
-.accessibility-option strong { font-size:16px; }
-.accessibility-option small { margin-top:3px; color:#bec4d4; font-size:13px; }
-.accessibility-option input { flex:none; width:22px; height:22px; accent-color:#8fe9ec; cursor:pointer; }
-.accessibility-actions { display:flex; justify-content:space-between; gap:12px; }
-.accessibility-actions button { min-height:44px; padding:0 17px; border-radius:12px; font:800 14px "Heebo",sans-serif; cursor:pointer; }
-.accessibility-reset { border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.06); color:#fff; }
-.accessibility-done { border:1px solid rgba(177,163,255,.7); background:linear-gradient(135deg,#8677eb,#596cbb); color:#fff; }
-html[data-large-text="true"] .site-tab-button { font-size:clamp(14px,calc(12.5px + .35vw),16px); }
-html[data-large-text="true"] .link-text { font-size:clamp(13px,calc(1.7vh + 2px),16px); }
-html[data-large-text="true"] .status,
-html[data-large-text="true"] .schedule-message,
-html[data-large-text="true"] .schedule-link,
-html[data-large-text="true"] .clips-description,
-html[data-large-text="true"] .clips-state,
-html[data-large-text="true"] .emoji-subscribe { font-size:1.15em; }
-html[data-large-text="true"] .accessibility-option { min-height:76px; }
-html[data-high-contrast="true"] .site-tab-button,
-html[data-high-contrast="true"] .link,
-html[data-high-contrast="true"] .schedule-day,
-html[data-high-contrast="true"] .emoji-item,
-html[data-high-contrast="true"] .clip-card { border-color:#fff !important; }
-html[data-high-contrast="true"] .site-tab-button,
-html[data-high-contrast="true"] .link,
-html[data-high-contrast="true"] .schedule-day,
-html[data-high-contrast="true"] .emoji-item,
-html[data-high-contrast="true"] .clip-card { color:#fff !important; }
-html[data-high-contrast="true"] .link-subtext,
-html[data-high-contrast="true"] .clips-description,
-html[data-high-contrast="true"] .clip-meta { color:#f1f1f1 !important; }
-html[data-reduced-motion="true"] *,
-html[data-reduced-motion="true"] *::before,
-html[data-reduced-motion="true"] *::after {
-    scroll-behavior:auto !important;
-    animation-duration:.01ms !important;
-    animation-iteration-count:1 !important;
-    transition-duration:.01ms !important;
-}
-@media (max-width:520px) {
-    .accessibility-trigger { top:max(10px,env(safe-area-inset-top)); right:max(10px,env(safe-area-inset-right)); min-height:42px; padding:0 13px; font-size:12px; }
-    .site-tabs { gap:7px; }
-    .site-tab-button { min-height:44px; padding:0 11px; }
-    .accessibility-dialog { border-radius:20px; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .accessibility-trigger { transition:none; }
-}
-
 </style>
 
 </head>
@@ -3748,11 +3649,6 @@ html[data-reduced-motion="true"] *::after {
     </div>
 </div>
 
-
-<button class="accessibility-trigger" id="accessibilityTrigger" type="button" aria-label="פתיחת הגדרות נגישות" aria-haspopup="dialog" aria-controls="accessibilityDialog">
-    <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
-    <span>נגישות</span>
-</button>
 
 <!-- =====================================================
      MAIN
@@ -4135,35 +4031,7 @@ loadAnnouncement();</script>
 
 </main>
 
-<dialog class="accessibility-dialog" id="accessibilityDialog" aria-labelledby="accessibilityTitle">
-    <div class="accessibility-dialog-head">
-        <div>
-            <span class="accessibility-eyebrow">SENSEI FR • ACCESSIBILITY</span>
-            <h2 id="accessibilityTitle">לכל האוטיסטים שפה</h2>
-            <p>כמה התאמות קטנות כדי שיהיה נוח לכולם.</p>
-        </div>
-        <button class="accessibility-close" id="accessibilityClose" type="button" aria-label="סגירת הגדרות נגישות">×</button>
-    </div>
-    <fieldset class="accessibility-options">
-        <legend>הגדרות תצוגה</legend>
-        <label class="accessibility-option">
-            <span><strong>טקסט גדול יותר</strong><small>הגדלת טקסט בטאבים ובתוכן</small></span>
-            <input type="checkbox" id="accessibilityLargeText">
-        </label>
-        <label class="accessibility-option">
-            <span><strong>ניגודיות גבוהה</strong><small>גבולות ברורים וטקסט בולט יותר</small></span>
-            <input type="checkbox" id="accessibilityHighContrast">
-        </label>
-        <label class="accessibility-option">
-            <span><strong>הפחתת תנועה</strong><small>כיבוי אנימציות ותזוזות</small></span>
-            <input type="checkbox" id="accessibilityReducedMotion">
-        </label>
-    </fieldset>
-    <div class="accessibility-actions">
-        <button class="accessibility-reset" id="accessibilityReset" type="button">איפוס הגדרות</button>
-        <button class="accessibility-done" id="accessibilityDone" type="button">סיימתי</button>
-    </div>
-</dialog>
+
 
 <script>
 
@@ -4201,73 +4069,6 @@ const scheduleBoard =
 const introSplash =
     document.getElementById("introSplash");
 
-
-const accessibilityTrigger = document.getElementById("accessibilityTrigger");
-const accessibilityDialog = document.getElementById("accessibilityDialog");
-const accessibilityClose = document.getElementById("accessibilityClose");
-const accessibilityDone = document.getElementById("accessibilityDone");
-const accessibilityReset = document.getElementById("accessibilityReset");
-const accessibilitySettings = {
-    largeText: document.getElementById("accessibilityLargeText"),
-    highContrast: document.getElementById("accessibilityHighContrast"),
-    reducedMotion: document.getElementById("accessibilityReducedMotion")
-};
-const accessibilityStorageKey = "sensei-fr-accessibility-v1";
-
-function getDefaultAccessibilitySettings() {
-    return {
-        largeText: false,
-        highContrast: false,
-        reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    };
-}
-
-function applyAccessibilitySettings(settings) {
-    const preferences = { ...getDefaultAccessibilitySettings(), ...settings };
-    document.documentElement.dataset.largeText = String(preferences.largeText === true);
-    document.documentElement.dataset.highContrast = String(preferences.highContrast === true);
-    document.documentElement.dataset.reducedMotion = String(preferences.reducedMotion === true);
-    Object.entries(accessibilitySettings).forEach(([key, input]) => {
-        input.checked = preferences[key] === true;
-    });
-}
-
-function saveAccessibilitySettings() {
-    const settings = Object.fromEntries(
-        Object.entries(accessibilitySettings).map(([key, input]) => [key, input.checked])
-    );
-    applyAccessibilitySettings(settings);
-    try {
-        localStorage.setItem(accessibilityStorageKey, JSON.stringify(settings));
-    } catch {
-        // The settings still apply for this page view if storage is unavailable.
-    }
-}
-
-try {
-    const savedSettings = JSON.parse(localStorage.getItem(accessibilityStorageKey) || "{}");
-    applyAccessibilitySettings(savedSettings && typeof savedSettings === "object" ? savedSettings : {});
-} catch {
-    applyAccessibilitySettings({});
-}
-
-Object.values(accessibilitySettings).forEach((input) => {
-    input.addEventListener("change", saveAccessibilitySettings);
-});
-accessibilityTrigger.addEventListener("click", () => accessibilityDialog.showModal());
-accessibilityDialog.addEventListener("click", (event) => {
-    if (event.target === accessibilityDialog) accessibilityDialog.close();
-});
-accessibilityClose.addEventListener("click", () => accessibilityDialog.close());
-accessibilityDone.addEventListener("click", () => accessibilityDialog.close());
-accessibilityReset.addEventListener("click", () => {
-    applyAccessibilitySettings(getDefaultAccessibilitySettings());
-    try {
-        localStorage.removeItem(accessibilityStorageKey);
-    } catch {
-        // Reset remains applied until the page is closed.
-    }
-});
 
 /* =========================================================
    SITE TABS
@@ -4667,6 +4468,19 @@ for (
 
 }
 
+
+/* Keep the original page protections */
+document.addEventListener("contextmenu", (event) => event.preventDefault());
+document.addEventListener("dragstart", (event) => event.preventDefault());
+document.addEventListener("selectstart", (event) => event.preventDefault());
+document.addEventListener("keydown", (event) => {
+    const key = event.key.toLowerCase();
+    const devToolsShortcut = event.key === "F12" ||
+        (event.ctrlKey && event.shiftKey && ["i", "j", "c"].includes(key)) ||
+        (event.metaKey && event.altKey && ["i", "j", "c"].includes(key));
+    const pageShortcut = (event.ctrlKey || event.metaKey) && ["u", "s"].includes(key);
+    if (devToolsShortcut || pageShortcut) event.preventDefault();
+});
 
 /* Fade links in as they enter the viewport */
 const linkCards = document.querySelectorAll(".links > .link");
