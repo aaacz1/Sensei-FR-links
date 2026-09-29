@@ -4323,7 +4323,7 @@ let githubKickCache = null;
 let githubKickCacheAt = 0;
 
 async function readGithubKickStatus(forceRefresh = false) {
-    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 60000) {
+    if (!forceRefresh && githubKickCache && Date.now() - githubKickCacheAt < 120000) {
         return githubKickCache;
     }
     const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
