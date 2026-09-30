@@ -3659,6 +3659,54 @@ body::-webkit-scrollbar,
 }
 </style>
 
+<style id="sensei-background-contrast">
+/* Strengthen the atmospheric wordmark behind the links card. */
+.background-wordmark {
+    -webkit-text-stroke-color: rgba(239, 244, 255, .27);
+    text-shadow: 0 0 34px rgba(210, 224, 255, .12);
+}
+
+@keyframes wordmarkPulse {
+    0%, 100% {
+        opacity: .38;
+        transform: translateX(0) scale(.985);
+        letter-spacing: .07em;
+    }
+    50% {
+        opacity: .58;
+        transform: translateX(0) scale(1.015);
+        letter-spacing: .085em;
+    }
+}
+
+@media (max-width: 520px) {
+    .background-wordmark {
+        -webkit-text-stroke-color: rgba(239, 244, 255, .32);
+        text-shadow: 0 0 25px rgba(210, 224, 255, .11);
+    }
+}
+
+/* Reduce the glass tint and blur so the background remains visible through it. */
+#main > .card.site-tab-panel {
+    background: linear-gradient(145deg, rgba(18, 23, 38, .38), rgba(8, 12, 21, .45));
+    backdrop-filter: blur(13px) saturate(128%);
+    -webkit-backdrop-filter: blur(13px) saturate(128%);
+    box-shadow:
+        0 34px 100px rgba(0, 0, 0, .68),
+        0 0 70px rgba(255, 255, 255, .04),
+        inset 0 1px 0 rgba(255, 255, 255, .27),
+        inset 0 -1px 0 rgba(255, 255, 255, .05);
+}
+
+#main > .card.site-tab-panel::before {
+    opacity: .52;
+}
+
+#main > .card.site-tab-panel::after {
+    opacity: .48;
+}
+</style>
+
 </head>
 
 <body>
