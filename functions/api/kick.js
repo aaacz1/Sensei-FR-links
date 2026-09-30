@@ -56,7 +56,7 @@ async function readGithubFallback() {
   if (!Number.isFinite(statusCreatedAt) || Date.now() - statusCreatedAt > MAX_STATUS_AGE || statusCreatedAt > Date.now() + 60_000) {
     throw new Error("GitHub status is stale");
   }
-  const match = /^(LIVE|OFFLINE|UNAVAILABLE)\\|(.+)$/.exec(status.description);
+  const match = /^(LIVE|OFFLINE|UNAVAILABLE)\|(.+)$/.exec(status.description);
   if (!match || match[1] === "UNAVAILABLE" || status.state !== "success") {
     throw new Error("GitHub status is unavailable");
   }
