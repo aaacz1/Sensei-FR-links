@@ -4329,92 +4329,118 @@ logoButton.addEventListener(
    KICK STATUS
 ========================================================= */
 
+const KICK_STATUS_CACHE_KEY = "sensei-fr-kick-status-v3";
+const KICK_STATUS_REFRESH_MS = 5 * 60 * 1000;
+const KICK_STATUS_MAX_AGE_MS = 10 * 60 * 1000;
 let kickStatusLoading = false;
-let githubKickCache = null;
-let githubKickCacheAt = 0;
+let kickStatusTimer = null;
+let kickStatusCache = readKickStatusCache();
 
-async function readGithubKickStatus() {
-    if (githubKickCache && Date.now() - githubKickCacheAt < 120000) {
-        return githubKickCache;
+function readKickStatusCache() {
+    try {
+        const cached = JSON.parse(localStorage.getItem(KICK_STATUS_CACHE_KEY) || "null");
+        if (!cached || cached.available !== true || typeof cached.live !== "boolean") return null;
+        const checkedAt = Date.parse(cached.checkedAt);
+        if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000 || Date.now() - checkedAt > KICK_STATUS_MAX_AGE_MS) {
+            return null;
+        }
+        return { available: true, live: cached.live, checkedAt: new Date(checkedAt).toISOString(), source: cached.source };
+    } catch {
+        return null;
     }
-    const apiUrl = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
-    const response = await fetch(apiUrl, {
-        cache: "no-store",
-        headers: { "Accept": "application/vnd.github+json" },
-        signal: AbortSignal.timeout(10000)
-    });
-    if (!response.ok) throw new Error("GitHub status unavailable");
-    const result = await response.json();
-    const status = (Array.isArray(result.statuses) ? result.statuses : [])
-        .filter((item) => item.context === "kick/live-status")
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-    if (!status || !status.created_at || !status.description) throw new Error("No GitHub status yet");
-    const checkedAt = new Date(status.created_at);
-    if (Number.isNaN(checkedAt.getTime()) || Date.now() - checkedAt.getTime() > 12 * 60 * 1000) {
-        throw new Error("GitHub status is stale");
-    }
-    const match = status.description.match(/^(LIVE|OFFLINE|UNAVAILABLE)\|(.+)$/);
-    if (!match) throw new Error("Invalid GitHub status");
-    const reportedAt = new Date(match[2]);
-    if (Number.isNaN(reportedAt.getTime()) || Math.abs(checkedAt.getTime() - reportedAt.getTime()) > 2 * 60 * 1000) {
-        throw new Error("GitHub status timestamp mismatch");
-    }
-    if (match[1] === "UNAVAILABLE" || status.state !== "success") {
-        throw new Error("Kick status check failed");
-    }
-    githubKickCache = { live: match[1] === "LIVE", checkedAt: reportedAt.toISOString() };
-    githubKickCacheAt = Date.now();
-    return githubKickCache;
+}
+
+function renderKickStatus(data, fromCache = false) {
+    const checkedAt = new Date(data.checkedAt);
+    const checkedTime = checkedAt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    const sourceLabel = data.source === "github" ? "גיבוי GitHub" : "Cloudflare";
+    statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
+    statusText.textContent = data.live ? "LIVE NOW" : "OFFLINE";
+    statusDot.dataset.state = data.live ? "live" : "offline";
+}
+
+function scheduleKickStatusCheck(delay = KICK_STATUS_REFRESH_MS) {
+    window.clearTimeout(kickStatusTimer);
+    kickStatusTimer = window.setTimeout(() => {
+        if (!document.hidden) updateKickStatus();
+    }, Math.max(1000, delay));
 }
 
 async function updateKickStatus() {
     if (document.hidden || kickStatusLoading) return;
+
+    const now = Date.now();
+    const age = kickStatusCache ? now - Date.parse(kickStatusCache.checkedAt) : Infinity;
+    if (kickStatusCache && age < KICK_STATUS_REFRESH_MS) {
+        renderKickStatus(kickStatusCache, true);
+        scheduleKickStatusCheck(KICK_STATUS_REFRESH_MS - age);
+        return;
+    }
+
     kickStatusLoading = true;
-    statusText.textContent = "CHECKING…";
-    statusDot.dataset.state = "loading";
-    statusDot.style.background = "";
-    statusDot.style.color = "";
-    statusDot.style.boxShadow = "";
+    if (!kickStatusCache || age >= KICK_STATUS_MAX_AGE_MS) {
+        statusText.textContent = "CHECKING…";
+        statusDot.dataset.state = "loading";
+        statusDot.style.background = "";
+        statusDot.style.color = "";
+        statusDot.style.boxShadow = "";
+    }
+
     try {
-        let data;
-        let source = "Cloudflare";
-        try {
-            const response = await fetch("/api/kick", {
-                cache: "no-store",
-                headers: { "Accept": "application/json" },
-                signal: AbortSignal.timeout(8000)
-            });
-            if (!response.ok) throw new Error("Cloudflare status unavailable");
-            data = await response.json();
-            if (data.available !== true || typeof data.live !== "boolean") throw new Error("Cloudflare status unavailable");
-            const checkedAt = new Date(data.checkedAt);
-            if (Number.isNaN(checkedAt.getTime()) || Date.now() - checkedAt.getTime() > 12 * 60 * 1000) {
-                throw new Error("Cloudflare status is stale");
-            }
-        } catch {
-            data = await readGithubKickStatus();
-            source = "GitHub";
+        const response = await fetch("/api/kick", {
+            cache: "default",
+            headers: { "Accept": "application/json" },
+            signal: AbortSignal.timeout(10000)
+        });
+        if (!response.ok) throw new Error("Kick status unavailable");
+        const data = await response.json();
+        const checkedAt = Date.parse(data.checkedAt);
+        if (data.available !== true || typeof data.live !== "boolean" ||
+            !Number.isFinite(checkedAt) || Date.now() - checkedAt > KICK_STATUS_MAX_AGE_MS ||
+            checkedAt > Date.now() + 60000) {
+            throw new Error("No recent Kick status");
         }
-        statusText.title = (source === "GitHub" ? "גיבוי מ־GitHub · " : "") +
-            (data.checkedAt
-                ? "נבדק " + new Date(data.checkedAt).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
-                : "");
-        statusText.textContent = data.live ? "LIVE NOW" : "OFFLINE";
-        statusDot.dataset.state = data.live ? "live" : "offline";
+
+        kickStatusCache = {
+            available: true,
+            live: data.live,
+            checkedAt: new Date(checkedAt).toISOString(),
+            source: data.source === "github" ? "github" : "cloudflare"
+        };
+        renderKickStatus(kickStatusCache);
+        try {
+            localStorage.setItem(KICK_STATUS_CACHE_KEY, JSON.stringify(kickStatusCache));
+        } catch {
+            // Keep the status available for this page view if storage is disabled.
+        }
     } catch {
-        statusText.textContent = "STATUS UNAVAILABLE";
-        statusText.title = "בדיקת Kick ו־GitHub נכשלה או שהתוצאה ישנה. אפשר לפתוח את Kick.";
-        statusDot.dataset.state = "unavailable";
+        if (kickStatusCache && Date.now() - Date.parse(kickStatusCache.checkedAt) < KICK_STATUS_MAX_AGE_MS) {
+            renderKickStatus(kickStatusCache, true);
+        } else {
+            statusText.textContent = "STATUS UNAVAILABLE";
+            statusText.title = "בדיקת Kick ו־GitHub נכשלה. ניסיון נוסף בעוד כמה דקות.";
+            statusDot.dataset.state = "unavailable";
+        }
     } finally {
         kickStatusLoading = false;
+        scheduleKickStatusCheck();
     }
 }
+
+if (kickStatusCache) renderKickStatus(kickStatusCache, true);
+else {
+    statusText.textContent = "CHECKING…";
+    statusDot.dataset.state = "loading";
+}
 updateKickStatus();
-setInterval(updateKickStatus, 60000);
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateKickStatus();
 });
-
+window.addEventListener("storage", (event) => {
+    if (event.key !== KICK_STATUS_CACHE_KEY) return;
+    kickStatusCache = readKickStatusCache();
+    if (kickStatusCache) renderKickStatus(kickStatusCache, true);
+});
 
 /* =========================================================
    PARTICLES
