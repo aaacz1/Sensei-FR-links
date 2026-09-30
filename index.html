@@ -3883,48 +3883,6 @@ body {
 </style>
 
 <style id="sensei-luxe-finish">
-/* Restore a visible opening moment, including for reduced-motion users. */
-#introSplash {
-    background:
-        radial-gradient(circle at 50% 44%, rgba(218, 190, 136, .12), transparent 25%),
-        radial-gradient(circle at 18% 18%, rgba(144, 167, 255, .09), transparent 28%),
-        linear-gradient(135deg, #07080d 0%, #111522 52%, #0b0e12 100%);
-}
-
-#introSplash::before {
-    background: rgba(202, 174, 119, .22);
-}
-
-#introSplash::after {
-    background: rgba(126, 170, 178, .16);
-}
-
-.intro-mark img {
-    border-color: rgba(231, 209, 163, .62);
-    box-shadow:
-        0 0 0 14px rgba(210, 184, 130, .055),
-        0 0 82px rgba(211, 185, 128, .2),
-        0 28px 76px rgba(0, 0, 0, .58);
-}
-
-.intro-mark span {
-    color: rgba(250, 244, 230, .9);
-    text-shadow: 0 2px 18px rgba(222, 194, 134, .2);
-}
-
-/* Keep the logo present until the splash itself fades away. */
-@keyframes introLogoIn {
-    0% { opacity: 0; transform: scale(.22); filter: blur(12px); }
-    58% { opacity: 1; transform: scale(1); filter: blur(0); }
-    100% { opacity: 1; transform: scale(1.015); filter: blur(0); }
-}
-
-@keyframes introLogoInMobile {
-    0% { opacity: 0; transform: scale(.24); filter: blur(12px); }
-    58% { opacity: 1; transform: scale(1); filter: blur(0); }
-    100% { opacity: 1; transform: scale(1.01); filter: blur(0); }
-}
-
 /* More transparent glass, with a soft premium navy finish. */
 #main > .card.site-tab-panel {
     background: linear-gradient(145deg, rgba(24, 28, 47, .52), rgba(8, 11, 20, .57));
@@ -3983,20 +3941,6 @@ body {
     border-color: rgba(237, 211, 158, .72);
     background: linear-gradient(112deg, rgba(143, 109, 53, .38), rgba(28, 27, 34, .56) 48%, rgba(88, 68, 39, .32));
     box-shadow: 0 16px 34px rgba(0, 0, 0, .3), 0 0 30px rgba(203, 171, 105, .12);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .intro-mark {
-        animation: none !important;
-        opacity: 1;
-        transform: none;
-        filter: none;
-    }
-
-    #introSplash::before,
-    #introSplash::after {
-        animation: none !important;
-    }
 }
 
 @media (max-width: 620px) {
