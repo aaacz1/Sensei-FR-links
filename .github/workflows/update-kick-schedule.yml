@@ -1,6 +1,11 @@
 name: Update Kick Schedule
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/scripts/**"
+      - ".github/workflows/update-kick-schedule.yml"
   schedule:
     - cron: "5 21 * * *"
   workflow_dispatch:
