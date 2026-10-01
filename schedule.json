@@ -1,35 +1,14 @@
 {
   "weekStart": "2026-09-27",
-  "emptyDays": [],
-  "streams": [
-    {
-      "date": "2026-09-27T00:00:00.000Z",
-      "title": "עוד לייב",
-      "time": "03:00 PM (6 hr)",
-      "category": "Just Chatting",
-      "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97?format=webp,quality=50"
-    },
-    {
-      "date": "2026-09-28T00:00:00.000Z",
-      "title": "עוד לייב",
-      "time": "03:00 PM (5 hr)",
-      "category": "Just Chatting",
-      "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97?format=webp,quality=50"
-    },
-    {
-      "date": "2026-09-29T00:00:00.000Z",
-      "title": "עוד לייב",
-      "time": "03:00 PM (6 hr)",
-      "category": "Just Chatting",
-      "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97?format=webp,quality=50"
-    },
-    {
-      "date": "2026-09-30T00:00:00.000Z",
-      "title": "עוד לייב",
-      "time": "03:00 PM (6 hr)",
-      "category": "Just Chatting",
-      "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97?format=webp,quality=50"
-    }
+  "emptyDays": [
+    "2026-09-27",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-03"
   ],
-  "updatedAt": "2026-09-26T23:01:52.258Z"
+  "streams": [],
+  "updatedAt": "2026-10-01T14:09:05.815Z"
 }
