@@ -12,12 +12,12 @@ try {
 
   const response = await page.goto(scheduleUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
   if (!response?.ok()) throw new Error(`Kick schedule returned HTTP ${response?.status() ?? "no response"}`);
-  await page.waitForFunction(() =>
-    Array.from(document.querySelectorAll("section > h3"))
-      .some((heading) => /[A-Za-z]+\s+\d{1,2}/.test(heading.textContent || "")),
-    null,
-    { timeout: 30000 }
-  );
+  await page.waitForFunction(() => {
+    const body = document.body.innerText;
+    return body.includes("No streams locked in this month") ||
+      Array.from(document.querySelectorAll("section > h3"))
+        .some((heading) => /[A-Za-z]+\s+\d{1,2}/.test(heading.textContent || ""));
+  }, null, { timeout: 30000 });
 
   const { days, noStreamsThisMonth } = await page.evaluate(() => ({
     noStreamsThisMonth: document.body.innerText.includes("No streams locked in this month"),
