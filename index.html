@@ -4699,18 +4699,25 @@ for (
 }
 
 
-/* Keep the original page protections */
-document.addEventListener("contextmenu", (event) => event.preventDefault());
-document.addEventListener("dragstart", (event) => event.preventDefault());
-document.addEventListener("selectstart", (event) => event.preventDefault());
+/* Restore the page's basic inspection and copy protections. */
+const blockPageAction = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+};
+["contextmenu", "dragstart", "selectstart", "copy", "cut"].forEach((type) => {
+    document.addEventListener(type, blockPageAction, true);
+});
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase();
     const devToolsShortcut = event.key === "F12" ||
-        (event.ctrlKey && event.shiftKey && ["i", "j", "c"].includes(key)) ||
-        (event.metaKey && event.altKey && ["i", "j", "c"].includes(key));
+        (event.ctrlKey && event.shiftKey && ["i", "j", "c", "k"].includes(key)) ||
+        (event.metaKey && event.altKey && ["i", "j", "c", "k"].includes(key));
     const pageShortcut = (event.ctrlKey || event.metaKey) && ["u", "s"].includes(key);
-    if (devToolsShortcut || pageShortcut) event.preventDefault();
-});
+    if (devToolsShortcut || pageShortcut) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+}, true);
 
 /* Fade links in as they enter the viewport */
 const linkCards = document.querySelectorAll(".links > .link");
