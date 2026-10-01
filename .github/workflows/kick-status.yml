@@ -51,7 +51,7 @@ jobs:
                       not isinstance(stream, dict) or not isinstance(stream.get("is_live"), bool)
                   ):
                       raise ValueError("Unexpected livestream response")
-                          result = "LIVE" if stream and stream.get("is_live") is True else "OFFLINE"
+                  result = "LIVE" if stream and stream.get("is_live") is True else "OFFLINE"
                   if result == "LIVE":
                       stream_title = str(stream.get("session_title") or stream.get("title") or "").replace("|", " ").strip()
                       stream_title = " ".join(stream_title.split())[:90]
