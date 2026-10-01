@@ -63,15 +63,16 @@ async function readGithubFallback() {
   if (!Number.isFinite(statusCreatedAt) || Date.now() - statusCreatedAt > MAX_STATUS_AGE || statusCreatedAt > Date.now() + 60_000) {
     throw new Error("GitHub status is stale");
   }
-  const match = /^(LIVE|OFFLINE|UNAVAILABLE)\|(.+)$/.exec(status.description);
-  if (!match || match[1] === "UNAVAILABLE" || status.state !== "success") {
+  const [state, checkedAtText, ...titleParts] = status.description.split("|");
+  if (!["LIVE", "OFFLINE"].includes(state) || status.state !== "success") {
     throw new Error("GitHub status is unavailable");
   }
-  const checkedAt = Date.parse(match[2]);
+  const checkedAt = Date.parse(checkedAtText);
+  const streamTitle = state === "LIVE" ? titleParts.join("|") : "";
   if (!Number.isFinite(checkedAt) || Math.abs(statusCreatedAt - checkedAt) > 2 * 60 * 1000) {
     throw new Error("GitHub status timestamp is invalid");
   }
-  return { available: true, live: match[1] === "LIVE", checkedAt: new Date(checkedAt).toISOString(), source: "github" };
+  return { available: true, live: state === "LIVE", streamTitle, checkedAt: new Date(checkedAt).toISOString(), source: "github" };
 }
 
 export async function onRequestGet() {
