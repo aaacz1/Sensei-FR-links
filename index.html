@@ -3851,7 +3851,7 @@ body::-webkit-scrollbar,
 </div>
 
 <script>
-async let savedAnnouncementText = document.getElementById('announcement')?.textContent.trim() || "";
+let savedAnnouncementText = document.getElementById('announcement')?.textContent.trim() || "";
 let latestStatusIsLive = false;
 let latestStreamTitle = "";
 
@@ -3861,7 +3861,7 @@ function renderAnnouncement(live = latestStatusIsLive, streamTitle = latestStrea
     element.textContent = live ? (streamTitle || "LIVE") : savedAnnouncementText;
 }
 
-function loadAnnouncement() {
+async function loadAnnouncement() {
     try {
         const response = await fetch(
             './announcement.json?ts=' + Date.now(),
