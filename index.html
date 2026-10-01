@@ -4576,6 +4576,9 @@ async function updateKickStatus() {
             });
             if (!response.ok) throw new Error("Cloudflare status unavailable");
             data = await response.json();
+            const title = [data.streamTitle, data.title, data.livestream?.session_title, data.livestream?.title]
+                .find((value) => typeof value === "string" && value.trim());
+            if (title) data.streamTitle = title.trim();
             const checkedAt = Date.parse(data.checkedAt);
             if (data.available !== true || typeof data.live !== "boolean" ||
                 !Number.isFinite(checkedAt) || Date.now() - checkedAt > KICK_STATUS_MAX_AGE_MS ||
