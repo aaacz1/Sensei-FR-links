@@ -4516,9 +4516,8 @@ async function readGithubFallbackStatus() {
         throw new Error("No successful GitHub status");
     }
     const createdAt = Date.parse(status.created_at);
-    const separator = status.description.indexOf("|");
-    const state = separator > 0 ? status.description.slice(0, separator) : "";
-    const reportedAt = separator > 0 ? Date.parse(status.description.slice(separator + 1)) : NaN;
+    const [state, reportedAtText, streamTitle = ""] = status.description.split("|", 3);
+    const reportedAt = Date.parse(reportedAtText);
     if (!Number.isFinite(createdAt) || Date.now() - createdAt > 12 * 60 * 1000 ||
         createdAt > Date.now() + 60000 || !["LIVE", "OFFLINE"].includes(state) ||
         !Number.isFinite(reportedAt) || Math.abs(createdAt - reportedAt) > 2 * 60 * 1000) {
@@ -4528,6 +4527,7 @@ async function readGithubFallbackStatus() {
         available: true,
         live: state === "LIVE",
         checkedAt: new Date(reportedAt).toISOString(),
+        streamTitle: state === "LIVE" ? streamTitle : "",
         source: "github"
     };
 }
