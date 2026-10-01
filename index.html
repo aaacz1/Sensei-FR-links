@@ -4519,6 +4519,39 @@ function readKickStatusCache() {
     }
 }
 
+async function readKickApiStatus() {
+    const response = await fetch(
+        "https://kick.com/api/v2/channels/sensei_fr?t=" + Date.now(),
+        {
+            cache: "no-store",
+            headers: { "Accept": "application/json" },
+            signal: AbortSignal.timeout(8000)
+        }
+    );
+    if (!response.ok) throw new Error("Kick API unavailable");
+    const channel = await response.json();
+    if (!channel || typeof channel !== "object" ||
+        !Object.prototype.hasOwnProperty.call(channel, "livestream")) {
+        throw new Error("Unexpected Kick response");
+    }
+
+    const stream = channel.livestream;
+    if (stream !== null && (
+        typeof stream !== "object" || Array.isArray(stream) ||
+        typeof stream.is_live !== "boolean"
+    )) {
+        throw new Error("Unexpected Kick livestream response");
+    }
+
+    return {
+        available: true,
+        live: stream !== null && stream.is_live === true,
+        checkedAt: new Date().toISOString(),
+        streamTitle: stream?.session_title || stream?.title || "",
+        source: "kick"
+    };
+}
+
 async function readGithubFallbackStatus() {
     const response = await fetch(GITHUB_STATUS_API + "?t=" + Date.now(), {
         cache: "no-store",
@@ -4563,7 +4596,8 @@ function renderKickStatus(data, fromCache = false) {
 
     const checkedAt = new Date(data.checkedAt);
     const checkedTime = checkedAt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-    const sourceLabel = data.source === "github" ? "GitHub" : "Cloudflare";
+    const sourceLabel = data.source === "github" ? "GitHub" :
+        data.source === "kick" ? "Kick" : "Cloudflare";
     statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
     statusText.textContent = data.live ? "ONLINE" : "OFFLINE";
     statusDot.dataset.state = data.live ? "live" : "offline";
@@ -4591,13 +4625,19 @@ async function updateKickStatus() {
 
     kickStatusLoading = true;
     try {
-        const data = await readGithubFallbackStatus();
+        let data;
+        try {
+            data = await readKickApiStatus();
+        } catch (kickError) {
+            console.warn("Direct Kick status check failed; trying GitHub:", kickError);
+            data = await readGithubFallbackStatus();
+        }
         kickStatusCache = {
             available: true,
             live: data.live,
             streamTitle: data.streamTitle,
             checkedAt: data.checkedAt,
-            source: "github"
+            source: data.source
         };
         renderKickStatus(kickStatusCache);
         try {
