@@ -3843,7 +3843,15 @@ body::-webkit-scrollbar,
 </div>
 
 <script>
-async function loadAnnouncement() {
+async let savedAnnouncementText = document.getElementById('announcement')?.textContent.trim() || "";
+
+function renderAnnouncement(live = kickStatusCache?.live, streamTitle = kickStatusCache?.streamTitle) {
+    const element = document.getElementById('announcement');
+    if (!element) return;
+    element.textContent = live ? (streamTitle || "LIVE") : savedAnnouncementText;
+}
+
+function loadAnnouncement() {
     try {
         const response = await fetch(
             './announcement.json?ts=' + Date.now(),
@@ -3859,7 +3867,8 @@ async function loadAnnouncement() {
         const element = document.getElementById('announcement');
 
         if (element && typeof data.text === 'string') {
-            element.textContent = data.text;
+            savedAnnouncementText = data.text;
+            renderAnnouncement();
         }
     } catch (error) {
         console.error('Failed to load announcement:', error);
@@ -4486,7 +4495,7 @@ function readKickStatusCache() {
         if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000) {
             return null;
         }
-        return { available: true, live: cached.live, checkedAt: new Date(checkedAt).toISOString(), source: cached.source };
+        return { available: true, live: cached.live, streamTitle: cached.streamTitle || "", checkedAt: new Date(checkedAt).toISOString(), source: cached.source };
     } catch {
         return null;
     }
@@ -4529,8 +4538,9 @@ function renderKickStatus(data, fromCache = false) {
     const sourceLabel = data.source === "github" ? "גיבוי GitHub" :
         data.source === "default" ? "מצב ברירת מחדל" : "Cloudflare";
     statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
-    statusText.textContent = data.live ? "ONLINE" : "OFFLINE";
+    statusText.textContent = data.live ? "LIVE" : "OFFLINE";
     statusDot.dataset.state = data.live ? "live" : "offline";
+    renderAnnouncement(data.live, data.streamTitle);
 }
 
 function scheduleKickStatusCheck(delay = KICK_STATUS_REFRESH_MS) {
@@ -4575,6 +4585,7 @@ async function updateKickStatus() {
         kickStatusCache = {
             available: true,
             live: data.live,
+            streamTitle: typeof data.streamTitle === "string" ? data.streamTitle : "",
             checkedAt: new Date(checkedAt).toISOString(),
             source: data.source === "github" ? "github" : "cloudflare"
         };
