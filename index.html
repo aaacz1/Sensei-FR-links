@@ -4476,7 +4476,11 @@ let kickStatusCache = readKickStatusCache();
 
 function readKickStatusCache() {
     try {
-        const cached = JSON.parse(localStorage.getItem(KICK_STATUS_CACHE_KEY) || "null");
+        const cached = JSON.parse(
+            localStorage.getItem(KICK_STATUS_CACHE_KEY) ||
+            localStorage.getItem("sensei-fr-kick-status-v3") ||
+            "null"
+        );
         if (!cached || cached.available !== true || typeof cached.live !== "boolean") return null;
         const checkedAt = Date.parse(cached.checkedAt);
         if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000) {
@@ -4522,9 +4526,10 @@ async function readGithubFallbackStatus() {
 function renderKickStatus(data, fromCache = false) {
     const checkedAt = new Date(data.checkedAt);
     const checkedTime = checkedAt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-    const sourceLabel = data.source === "github" ? "גיבוי GitHub" : "Cloudflare";
+    const sourceLabel = data.source === "github" ? "גיבוי GitHub" :
+        data.source === "default" ? "מצב ברירת מחדל" : "Cloudflare";
     statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
-    statusText.textContent = data.live ? "LIVE NOW" : "OFFLINE";
+    statusText.textContent = data.live ? "ONLINE" : "OFFLINE";
     statusDot.dataset.state = data.live ? "live" : "offline";
 }
 
@@ -4539,21 +4544,13 @@ async function updateKickStatus() {
     if (document.hidden || kickStatusLoading) return;
 
     const age = kickStatusCache ? Date.now() - Date.parse(kickStatusCache.checkedAt) : Infinity;
-    if (kickStatusCache && age < KICK_STATUS_REFRESH_MS) {
+    if (kickStatusCache && kickStatusCache.source !== "default" && age < KICK_STATUS_REFRESH_MS) {
         renderKickStatus(kickStatusCache, true);
         scheduleKickStatusCheck(KICK_STATUS_REFRESH_MS - age);
         return;
     }
 
     kickStatusLoading = true;
-    if (!kickStatusCache || age >= KICK_STATUS_MAX_AGE_MS) {
-        statusText.textContent = "CHECKING…";
-        statusDot.dataset.state = "loading";
-        statusDot.style.background = "";
-        statusDot.style.color = "";
-        statusDot.style.boxShadow = "";
-    }
-
     try {
         let data;
         try {
@@ -4611,11 +4608,15 @@ async function updateKickStatus() {
     }
 }
 
-if (kickStatusCache) renderKickStatus(kickStatusCache, true);
-else {
-    statusText.textContent = "CHECKING…";
-    statusDot.dataset.state = "loading";
+if (!kickStatusCache) {
+    kickStatusCache = {
+        available: true,
+        live: false,
+        checkedAt: new Date(0).toISOString(),
+        source: "default"
+    };
 }
+renderKickStatus(kickStatusCache, true);
 updateKickStatus();
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateKickStatus();
