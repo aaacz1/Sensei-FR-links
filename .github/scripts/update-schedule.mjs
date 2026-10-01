@@ -40,14 +40,6 @@ try {
     day: "numeric"
   }).formatToParts(new Date());
   const jerusalemDate = Object.fromEntries(jerusalemDateParts.map(({ type, value }) => [type, value]));
-  const currentYear = Number(jerusalemDate.year);
-  const parseDate = (label) => {
-    const normalized = label.replace(/\s+/g, " ").trim();
-    const withYear = /\b\d{4}\b/.test(normalized) ? normalized : `${normalized}, ${currentYear}`;
-    const parsed = new Date(`${withYear} 00:00:00 UTC`);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  };
-
   const localToday = new Date(Date.UTC(
     Number(jerusalemDate.year),
     Number(jerusalemDate.month) - 1,
@@ -58,12 +50,26 @@ try {
   const weekEnd = new Date(weekStart);
   weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
 
-  const currentWeek = days
-    .map((day) => ({ ...day, date: parseDate(day.label) }))
-    .filter((day) => day.date && day.date >= weekStart && day.date < weekEnd);
+  const daysWithoutYear = days.map((day) => ({
+    ...day,
+    date: (() => {
+      const match = day.label.match(/([A-Za-z]+)\\s+(\\d{1,2})/);
+      if (!match) return null;
+      const monthIndex = new Date(`${match[1]} 1, 2000 UTC`).getUTCMonth();
+      if (Number.isNaN(monthIndex)) return null;
+      const candidates = [Number(jerusalemDate.year) - 1, Number(jerusalemDate.year), Number(jerusalemDate.year) + 1]
+        .map((year) => new Date(Date.UTC(year, monthIndex, Number(match[2]))));
+      return candidates.sort((a, b) =>
+        Math.abs(a.getTime() - localToday.getTime()) - Math.abs(b.getTime() - localToday.getTime())
+      )[0];
+    })()
+  }));
+
+  const currentWeek = daysWithoutYear.filter((day) => day.date && day.date >= weekStart && day.date < weekEnd);
 
   if (currentWeek.length === 0) {
-    throw new Error(`Kick schedule did not expose any dates for week ${weekStart.toISOString().slice(0, 10)}. Existing schedule.json was preserved.`);
+    const labels = days.map((day) => day.label).join(", ") || "none";
+    throw new Error(`Kick schedule showed no dates in current Israel week ${weekStart.toISOString().slice(0, 10)}. Headings found: ${labels}. Existing schedule.json was preserved.`);
   }
 
   const currentSchedule = JSON.parse(await readFile("schedule.json", "utf8"));
