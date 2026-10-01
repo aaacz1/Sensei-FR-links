@@ -4465,9 +4465,10 @@ logoButton.addEventListener(
    KICK STATUS
 ========================================================= */
 
-const KICK_STATUS_CACHE_KEY = "sensei-fr-kick-status-v3";
+
 const KICK_STATUS_REFRESH_MS = 5 * 60 * 1000;
 const KICK_STATUS_MAX_AGE_MS = 10 * 60 * 1000;
+const KICK_STATUS_CACHE_KEY = "sensei-fr-kick-status-v4";
 const GITHUB_STATUS_API = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
 let kickStatusLoading = false;
 let kickStatusTimer = null;
@@ -4478,7 +4479,7 @@ function readKickStatusCache() {
         const cached = JSON.parse(localStorage.getItem(KICK_STATUS_CACHE_KEY) || "null");
         if (!cached || cached.available !== true || typeof cached.live !== "boolean") return null;
         const checkedAt = Date.parse(cached.checkedAt);
-        if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000 || Date.now() - checkedAt > KICK_STATUS_MAX_AGE_MS) {
+        if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000) {
             return null;
         }
         return { available: true, live: cached.live, checkedAt: new Date(checkedAt).toISOString(), source: cached.source };
@@ -4587,12 +4588,22 @@ async function updateKickStatus() {
             // Keep the result available for this page view if storage is disabled.
         }
     } catch {
-        if (kickStatusCache && Date.now() - Date.parse(kickStatusCache.checkedAt) < KICK_STATUS_MAX_AGE_MS) {
+        if (kickStatusCache) {
             renderKickStatus(kickStatusCache, true);
         } else {
-            statusText.textContent = "STATUS UNAVAILABLE";
-            statusText.title = "בדיקת Kick ו־GitHub נכשלה. ניסיון נוסף בעוד כמה דקות.";
-            statusDot.dataset.state = "unavailable";
+            // Keep the indicator strictly binary even before the first successful check.
+            kickStatusCache = {
+                available: true,
+                live: false,
+                checkedAt: new Date().toISOString(),
+                source: "default"
+            };
+            renderKickStatus(kickStatusCache, true);
+            try {
+                localStorage.setItem(KICK_STATUS_CACHE_KEY, JSON.stringify(kickStatusCache));
+            } catch {
+                // The binary default still applies for this page view.
+            }
         }
     } finally {
         kickStatusLoading = false;
