@@ -12,7 +12,11 @@ try {
 
   const response = await page.goto(scheduleUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
   if (!response?.ok()) throw new Error(`Kick schedule returned HTTP ${response?.status() ?? "no response"}`);
-  await page.waitForSelector("h3", { timeout: 30000 });
+  await page.waitForFunction(() =>
+    Array.from(document.querySelectorAll("section > h3"))
+      .some((heading) => /[A-Za-z]+\\s+\\d{1,2}/.test(heading.textContent || "")),
+    { timeout: 30000 }
+  );
 
   const days = await page.evaluate(() => Array.from(document.querySelectorAll("section"))
     .map((section) => {
@@ -53,7 +57,7 @@ try {
   const daysWithoutYear = days.map((day) => ({
     ...day,
     date: (() => {
-      const match = day.label.match(/([A-Za-z]+)\\s+(\\d{1,2})/);
+      const match = day.label.match(/([A-Za-z]+)\s+(\d{1,2})/);
       if (!match) return null;
       const monthIndex = new Date(`${match[1]} 1, 2000 UTC`).getUTCMonth();
       if (Number.isNaN(monthIndex)) return null;
