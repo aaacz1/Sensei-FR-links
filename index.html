@@ -3844,8 +3844,10 @@ body::-webkit-scrollbar,
 
 <script>
 async let savedAnnouncementText = document.getElementById('announcement')?.textContent.trim() || "";
+let latestStatusIsLive = false;
+let latestStreamTitle = "";
 
-function renderAnnouncement(live = kickStatusCache?.live, streamTitle = kickStatusCache?.streamTitle) {
+function renderAnnouncement(live = latestStatusIsLive, streamTitle = latestStreamTitle) {
     const element = document.getElementById('announcement');
     if (!element) return;
     element.textContent = live ? (streamTitle || "LIVE") : savedAnnouncementText;
@@ -4540,7 +4542,9 @@ function renderKickStatus(data, fromCache = false) {
     statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
     statusText.textContent = data.live ? "LIVE" : "OFFLINE";
     statusDot.dataset.state = data.live ? "live" : "offline";
-    renderAnnouncement(data.live, data.streamTitle);
+    latestStatusIsLive = data.live;
+    latestStreamTitle = data.streamTitle || "";
+    renderAnnouncement();
 }
 
 function scheduleKickStatusCheck(delay = KICK_STATUS_REFRESH_MS) {
