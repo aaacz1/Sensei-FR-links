@@ -3728,6 +3728,14 @@ body::-webkit-scrollbar,
 #main > .card.site-tab-panel::after {
     display: none;
 }
+
+/* Link buttons stay visible if the entrance observer is delayed or unavailable. */
+.links > .link {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
 </style>
 
 </head>
