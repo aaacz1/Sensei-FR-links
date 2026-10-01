@@ -19,24 +19,27 @@ try {
     { timeout: 30000 }
   );
 
-  const days = await page.evaluate(() => Array.from(document.querySelectorAll("section"))
-    .map((section) => {
-      const heading = section.querySelector(":scope > h3");
-      if (!heading) return null;
+  const { days, noStreamsThisMonth } = await page.evaluate(() => ({
+    noStreamsThisMonth: document.body.innerText.includes("No streams locked in this month"),
+    days: Array.from(document.querySelectorAll("section"))
+      .map((section) => {
+        const heading = section.querySelector(":scope > h3");
+        if (!heading) return null;
 
-      const streams = Array.from(section.querySelectorAll(":scope button")).map((button) => ({
-        title: button.querySelector("p")?.textContent?.trim() || "לייב",
-        time: button.querySelectorAll("p")[1]?.textContent?.trim() || "",
-        category: button.querySelector("img")?.alt?.trim() || "Just Chatting",
-        thumbnail: button.querySelector("img")?.src || null
-      }));
+        const streams = Array.from(section.querySelectorAll(":scope button")).map((button) => ({
+          title: button.querySelector("p")?.textContent?.trim() || "לייב",
+          time: button.querySelectorAll("p")[1]?.textContent?.trim() || "",
+          category: button.querySelector("img")?.alt?.trim() || "Just Chatting",
+          thumbnail: button.querySelector("img")?.src || null
+        }));
 
-      return {
-        label: heading.textContent.replace("(Today)", "").trim(),
-        streams
-      };
-    })
-    .filter(Boolean));
+        return {
+          label: heading.textContent.replace("(Today)", "").trim(),
+          streams
+        };
+      })
+      .filter(Boolean)
+  }));
 
   const jerusalemDateParts = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Jerusalem",
@@ -73,13 +76,22 @@ try {
   const currentWeek = daysWithoutYear.filter((day) => day.date && day.date >= weekStart && day.date < weekEnd);
 
   if (currentWeek.length === 0) {
-    const labels = days.map((day) => day.label).join(", ") || "none";
-    throw new Error(`Kick schedule showed no dates in current Israel week ${weekStart.toISOString().slice(0, 10)}. Headings found: ${labels}. Existing schedule.json was preserved.`);
+    if (!noStreamsThisMonth) {
+      const labels = days.map((day) => day.label).join(", ") || "none";
+      throw new Error(`Kick schedule could not be read for Israel week ${weekStart.toISOString().slice(0, 10)}. Headings found: ${labels}. Existing schedule.json was preserved.`);
+    }
+
+    for (let offset = 0; offset < 7; offset += 1) {
+      const date = new Date(weekStart);
+      date.setUTCDate(date.getUTCDate() + offset);
+      currentWeek.push({ date, streams: [] });
+    }
+    console.log("Kick confirms there are no streams scheduled this month; publishing an empty week.");
   }
 
   const currentSchedule = JSON.parse(await readFile("schedule.json", "utf8"));
   const hasStreams = currentWeek.some((day) => day.streams.length > 0);
-  if (!hasStreams && currentSchedule.weekStart === weekStart.toISOString().slice(0, 10) && currentSchedule.streams?.length > 0) {
+  if (!noStreamsThisMonth && !hasStreams && currentSchedule.weekStart === weekStart.toISOString().slice(0, 10) && currentSchedule.streams?.length > 0) {
     throw new Error("Kick page showed no streams although the saved current-week schedule has streams. Refusing to erase it; check Kick's page structure/API.");
   }
 
