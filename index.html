@@ -4554,7 +4554,8 @@ async function updateKickStatus() {
     if (document.hidden || kickStatusLoading) return;
 
     const age = kickStatusCache ? Date.now() - Date.parse(kickStatusCache.checkedAt) : Infinity;
-    if (kickStatusCache && kickStatusCache.source !== "default" && age < KICK_STATUS_REFRESH_MS) {
+    if (kickStatusCache && kickStatusCache.source !== "default" && age < KICK_STATUS_REFRESH_MS &&
+        (!kickStatusCache.live || kickStatusCache.streamTitle)) {
         renderKickStatus(kickStatusCache, true);
         scheduleKickStatusCheck(KICK_STATUS_REFRESH_MS - age);
         return;
