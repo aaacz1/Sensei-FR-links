@@ -14,7 +14,8 @@ try {
   if (!response?.ok()) throw new Error(`Kick schedule returned HTTP ${response?.status() ?? "no response"}`);
   await page.waitForFunction(() =>
     Array.from(document.querySelectorAll("section > h3"))
-      .some((heading) => /[A-Za-z]+\\s+\\d{1,2}/.test(heading.textContent || "")),
+      .some((heading) => /[A-Za-z]+\s+\d{1,2}/.test(heading.textContent || "")),
+    null,
     { timeout: 30000 }
   );
 
