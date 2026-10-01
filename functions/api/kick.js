@@ -34,7 +34,14 @@ async function readKick() {
   if (stream !== null && (typeof stream !== "object" || typeof stream.is_live !== "boolean")) {
     throw new Error("Unexpected livestream response");
   }
-  return { available: true, live: stream?.is_live === true, checkedAt: new Date().toISOString(), source: "kick" };
+  return {
+    available: true,
+    live: stream?.is_live === true,
+    streamTitle: typeof stream?.session_title === "string" ? stream.session_title :
+      typeof stream?.title === "string" ? stream.title : "",
+    checkedAt: new Date().toISOString(),
+    source: "kick"
+  };
 }
 
 async function readGithubFallback() {
