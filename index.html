@@ -4487,7 +4487,7 @@ logoButton.addEventListener(
 
 const KICK_STATUS_REFRESH_MS = 5 * 60 * 1000;
 const KICK_STATUS_MAX_AGE_MS = 10 * 60 * 1000;
-const KICK_STATUS_CACHE_KEY = "sensei-fr-kick-status-v4";
+const KICK_STATUS_CACHE_KEY = "sensei-fr-kick-status-v5";
 const GITHUB_STATUS_API = "https://api.github.com/repos/aaacz1/Sensei-FR-links/commits/main/status";
 let kickStatusLoading = false;
 let kickStatusTimer = null;
@@ -4497,22 +4497,30 @@ function readKickStatusCache() {
     try {
         const cached = JSON.parse(
             localStorage.getItem(KICK_STATUS_CACHE_KEY) ||
+            localStorage.getItem("sensei-fr-kick-status-v4") ||
             localStorage.getItem("sensei-fr-kick-status-v3") ||
             "null"
         );
         if (!cached || cached.available !== true || typeof cached.live !== "boolean") return null;
         const checkedAt = Date.parse(cached.checkedAt);
-        if (!Number.isFinite(checkedAt) || checkedAt > Date.now() + 60000) {
+        const age = Date.now() - checkedAt;
+        if (!Number.isFinite(checkedAt) || age < -60000 || age > KICK_STATUS_MAX_AGE_MS) {
             return null;
         }
-        return { available: true, live: cached.live, streamTitle: cached.streamTitle || "", checkedAt: new Date(checkedAt).toISOString(), source: cached.source };
+        return {
+            available: true,
+            live: cached.live,
+            streamTitle: cached.streamTitle || "",
+            checkedAt: new Date(checkedAt).toISOString(),
+            source: cached.source
+        };
     } catch {
         return null;
     }
 }
 
 async function readGithubFallbackStatus() {
-    const response = await fetch(GITHUB_STATUS_API, {
+    const response = await fetch(GITHUB_STATUS_API + "?t=" + Date.now(), {
         cache: "no-store",
         headers: { "Accept": "application/vnd.github+json" },
         signal: AbortSignal.timeout(8000)
@@ -4528,7 +4536,7 @@ async function readGithubFallbackStatus() {
     const createdAt = Date.parse(status.created_at);
     const [state, reportedAtText, streamTitle = ""] = status.description.split("|", 3);
     const reportedAt = Date.parse(reportedAtText);
-    if (!Number.isFinite(createdAt) || Date.now() - createdAt > 12 * 60 * 1000 ||
+    if (!Number.isFinite(createdAt) || Date.now() - createdAt > KICK_STATUS_MAX_AGE_MS ||
         createdAt > Date.now() + 60000 || !["LIVE", "OFFLINE"].includes(state) ||
         !Number.isFinite(reportedAt) || Math.abs(createdAt - reportedAt) > 2 * 60 * 1000) {
         throw new Error("GitHub status is stale or invalid");
@@ -4543,12 +4551,21 @@ async function readGithubFallbackStatus() {
 }
 
 function renderKickStatus(data, fromCache = false) {
+    if (!data || data.available !== true || typeof data.live !== "boolean") {
+        statusText.title = "לא התקבלה בדיקת מצב עדכנית";
+        statusText.textContent = "UNKNOWN";
+        statusDot.dataset.state = "unknown";
+        latestStatusIsLive = null;
+        latestStreamTitle = "";
+        renderAnnouncement(false, "");
+        return;
+    }
+
     const checkedAt = new Date(data.checkedAt);
     const checkedTime = checkedAt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-    const sourceLabel = data.source === "github" ? "גיבוי GitHub" :
-        data.source === "default" ? "מצב ברירת מחדל" : "Cloudflare";
+    const sourceLabel = data.source === "github" ? "GitHub" : "Cloudflare";
     statusText.title = (fromCache ? "תוצאה שמורה · " : "") + sourceLabel + " · נבדק " + checkedTime;
-    statusText.textContent = data.live ? "LIVE" : "OFFLINE";
+    statusText.textContent = data.live ? "ONLINE" : "OFFLINE";
     statusDot.dataset.state = data.live ? "live" : "offline";
     latestStatusIsLive = data.live;
     latestStreamTitle = data.streamTitle || "";
@@ -4566,8 +4583,7 @@ async function updateKickStatus() {
     if (document.hidden || kickStatusLoading) return;
 
     const age = kickStatusCache ? Date.now() - Date.parse(kickStatusCache.checkedAt) : Infinity;
-    if (kickStatusCache && kickStatusCache.source !== "default" && age < KICK_STATUS_REFRESH_MS &&
-        (!kickStatusCache.live || kickStatusCache.streamTitle)) {
+    if (kickStatusCache && age >= 0 && age < KICK_STATUS_REFRESH_MS) {
         renderKickStatus(kickStatusCache, true);
         scheduleKickStatusCheck(KICK_STATUS_REFRESH_MS - age);
         return;
@@ -4575,59 +4591,33 @@ async function updateKickStatus() {
 
     kickStatusLoading = true;
     try {
-        let data;
-        try {
-            const response = await fetch("/api/kick", {
-                cache: "default",
-                headers: { "Accept": "application/json" },
-                signal: AbortSignal.timeout(10000)
-            });
-            if (!response.ok) throw new Error("Cloudflare status unavailable");
-            data = await response.json();
-            const title = [data.streamTitle, data.title, data.livestream?.session_title, data.livestream?.title]
-                .find((value) => typeof value === "string" && value.trim());
-            if (title) data.streamTitle = title.trim();
-            const checkedAt = Date.parse(data.checkedAt);
-            if (data.available !== true || typeof data.live !== "boolean" ||
-                !Number.isFinite(checkedAt) || Date.now() - checkedAt > KICK_STATUS_MAX_AGE_MS ||
-                checkedAt > Date.now() + 60000) {
-                throw new Error("No recent Cloudflare status");
-            }
-        } catch {
-            data = await readGithubFallbackStatus();
-        }
-
-        const checkedAt = Date.parse(data.checkedAt);
+        const data = await readGithubFallbackStatus();
         kickStatusCache = {
             available: true,
             live: data.live,
-            streamTitle: typeof data.streamTitle === "string" ? data.streamTitle : "",
-            checkedAt: new Date(checkedAt).toISOString(),
-            source: data.source === "github" ? "github" : "cloudflare"
+            streamTitle: data.streamTitle,
+            checkedAt: data.checkedAt,
+            source: "github"
         };
         renderKickStatus(kickStatusCache);
         try {
             localStorage.setItem(KICK_STATUS_CACHE_KEY, JSON.stringify(kickStatusCache));
         } catch {
-            // Keep the result available for this page view if storage is disabled.
+            // The current page can still use the freshly checked status.
         }
-    } catch {
-        if (kickStatusCache) {
+    } catch (error) {
+        console.warn("Could not refresh Kick status:", error);
+        const cachedAge = kickStatusCache ? Date.now() - Date.parse(kickStatusCache.checkedAt) : Infinity;
+        if (kickStatusCache && cachedAge >= 0 && cachedAge <= KICK_STATUS_MAX_AGE_MS) {
             renderKickStatus(kickStatusCache, true);
         } else {
-            // Keep the indicator strictly binary even before the first successful check.
-            kickStatusCache = {
-                available: true,
-                live: false,
-                checkedAt: new Date().toISOString(),
-                source: "default"
-            };
-            renderKickStatus(kickStatusCache, true);
+            kickStatusCache = null;
             try {
-                localStorage.setItem(KICK_STATUS_CACHE_KEY, JSON.stringify(kickStatusCache));
+                localStorage.removeItem(KICK_STATUS_CACHE_KEY);
             } catch {
-                // The binary default still applies for this page view.
+                // Storage is optional.
             }
+            renderKickStatus(null);
         }
     } finally {
         kickStatusLoading = false;
@@ -4635,15 +4625,7 @@ async function updateKickStatus() {
     }
 }
 
-if (!kickStatusCache) {
-    kickStatusCache = {
-        available: true,
-        live: false,
-        checkedAt: new Date(0).toISOString(),
-        source: "default"
-    };
-}
-renderKickStatus(kickStatusCache, true);
+renderKickStatus(kickStatusCache, Boolean(kickStatusCache));
 updateKickStatus();
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateKickStatus();
@@ -4651,7 +4633,7 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("storage", (event) => {
     if (event.key !== KICK_STATUS_CACHE_KEY) return;
     kickStatusCache = readKickStatusCache();
-    if (kickStatusCache) renderKickStatus(kickStatusCache, true);
+    renderKickStatus(kickStatusCache, Boolean(kickStatusCache));
 });
 
 /* =========================================================
