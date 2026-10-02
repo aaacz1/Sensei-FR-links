@@ -32,17 +32,17 @@ jobs:
           if (!response.ok) throw new Error("YouTube feed returned HTTP " + response.status);
           const xml = await response.text();
           const decode = (value) => value
-            .replace(/^\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*$/, "$1")
-            .replace(/&#x([\\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
-            .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+            .replace(/^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/, "$1")
+            .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+            .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
             .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
             .replace(/&apos;/g, "'").replace(/&amp;/g, "&");
           const value = (entry, tag) => {
-            const escaped = tag.replace(":", "\\\\s*:");
-            const match = entry.match(new RegExp("<" + escaped + "\\\\b[^>]*>([\\\\s\\\\S]*?)</" + escaped + ">", "i"));
+            const escaped = tag.replace(":", "\\s*:");
+            const match = entry.match(new RegExp("<" + escaped + "\\b[^>]*>([\\s\\S]*?)</" + escaped + ">", "i"));
             return match ? decode(match[1]) : "";
           };
-          const videos = [...xml.matchAll(/<entry\\b[^>]*>([\\s\\S]*?)<\\/entry>/gi)]
+          const videos = [...xml.matchAll(/<entry\b[^>]*>([\s\S]*?)<\/entry>/gi)]
             .map(([, entry]) => {
               const id = value(entry, "yt:videoId");
               return id ? {
@@ -53,7 +53,7 @@ jobs:
               } : null;
             }).filter(Boolean).slice(0, 5);
           if (videos.length === 0) throw new Error("YouTube feed contained no videos; keeping previous cache.");
-          const next = JSON.stringify({ status: "ok", videos }, null, 2) + "\\n";
+          const next = JSON.stringify({ status: "ok", videos }, null, 2) + "\n";
           let previous = "";
           try { previous = readFileSync("youtube.json", "utf8"); } catch {}
           if (previous !== next) writeFileSync("youtube.json", next);
