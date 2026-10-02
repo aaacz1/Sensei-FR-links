@@ -4556,9 +4556,13 @@ async function loadYoutubeVideos(forceRefresh = false) {
     showYoutubeMessage("טוען את חמשת הסרטונים האחרונים…");
     youtubeGrid.setAttribute("aria-busy", "true");
     try {
-        const response = await fetch("youtube.json?v=" + Date.now(), { cache: "no-store" });
-        if (!response.ok) throw new Error("YouTube feed unavailable");
-        const data = await response.json();
+        let response = await fetch("/api/youtube", { cache: "no-store" });
+        let data = response.ok ? await response.json() : null;
+        if (!data?.videos?.length) {
+            response = await fetch("youtube.json?v=" + Date.now(), { cache: "no-store" });
+            if (response.ok) data = await response.json();
+        }
+        if (!data) throw new Error("YouTube feed unavailable");
         if (data.fetchedAt) {
             youtubeUpdated.textContent = data.checkedAt
                 ? "נבדק " + new Date(data.checkedAt).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" })
