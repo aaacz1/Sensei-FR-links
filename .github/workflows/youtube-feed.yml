@@ -51,7 +51,7 @@ jobs:
                 publishedAt: value(entry, "published"),
                 thumbnail: "https://i.ytimg.com/vi/" + encodeURIComponent(id) + "/mqdefault.jpg"
               } : null;
-            }).filter(Boolean).slice(0, 5);
+            }).filter(Boolean).slice(0, 6);
           if (videos.length === 0) throw new Error("YouTube feed contained no videos; keeping previous cache.");
           const next = JSON.stringify({ status: "ok", videos }, null, 2) + "\n";
           let previous = "";
