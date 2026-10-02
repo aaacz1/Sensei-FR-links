@@ -4563,11 +4563,9 @@ async function loadYoutubeVideos(forceRefresh = false) {
             if (response.ok) data = await response.json();
         }
         if (!data) throw new Error("YouTube feed unavailable");
-        if (data.fetchedAt) {
-            youtubeUpdated.textContent = data.checkedAt
-                ? "נבדק " + new Date(data.checkedAt).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" })
-                : "נבדק אוטומטית כל 12 שעות";
-        }
+        youtubeUpdated.textContent = data.checkedAt || data.fetchedAt
+            ? "נבדק " + new Date(data.checkedAt || data.fetchedAt).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" })
+            : "מתעדכן אוטומטית כל 12 שעות";
         if (data.status !== "ok" || !Array.isArray(data.videos)) {
             showYoutubeMessage("לא ניתן לטעון כרגע את הסרטונים. אפשר לפתוח את הערוץ ב-YouTube.");
             return;
