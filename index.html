@@ -3813,7 +3813,6 @@ loadAnnouncement();</script>
             </div>
             <div class="youtube-actions">
                 <span class="youtube-updated" id="youtubeUpdated" aria-live="polite">נבדק אוטומטית כל 12 שעות</span>
-                <button class="clips-kick-link" id="youtubeRefresh" type="button">רענון</button>
                 <a class="clips-kick-link" href="https://www.youtube.com/@senseifr-livestream" target="_blank" rel="noopener noreferrer">לערוץ YouTube <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
             </div>
         </div>
@@ -4551,7 +4550,7 @@ function showYoutubeMessage(message) {
 async function loadYoutubeVideos(forceRefresh = false) {
     if (!youtubeGrid || youtubeLoading || document.hidden) return;
     youtubeLoading = true;
-    youtubeRefresh.disabled = true;
+    if (youtubeRefresh) youtubeRefresh.disabled = true;
     youtubeGrid.setAttribute("aria-busy", "true");
     youtubeUpdated.textContent = "טוען סרטונים…";
     showYoutubeMessage("טוען את חמשת הסרטונים האחרונים…");
@@ -4624,11 +4623,11 @@ async function loadYoutubeVideos(forceRefresh = false) {
         showYoutubeMessage("לא הצלחנו לטעון את הסרטונים. נסו לרענן או לפתוח את ערוץ YouTube.");
     } finally {
         youtubeLoading = false;
-        youtubeRefresh.disabled = false;
+        if (youtubeRefresh) youtubeRefresh.disabled = false;
     }
 }
 
-youtubeRefresh?.addEventListener("click", () => loadYoutubeVideos(true));
+
 if (window.location.hash === "#youtube") loadYoutubeVideos();
 </script>
 
