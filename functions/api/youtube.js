@@ -34,7 +34,7 @@ export async function onRequestGet({ env, request }) {
       .map(([, entry]) => {
         const id = xmlValue(entry, "yt:videoId");
         return id ? { id, title: xmlValue(entry, "title"), publishedAt: xmlValue(entry, "published"), thumbnail: `https://i.ytimg.com/vi/${encodeURIComponent(id)}/mqdefault.jpg` } : null;
-      }).filter(Boolean).slice(0, 5);
+      }).filter(Boolean).slice(0, 6);
     const result = json({ status: "ok", fetchedAt: new Date().toISOString(), videos }, 200, 1800);
     await cache.put(cacheKey, result.clone());
     return result;
