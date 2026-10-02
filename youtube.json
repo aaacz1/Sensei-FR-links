@@ -1,4 +1,35 @@
 {
   "status": "ok",
-  "videos": []
+  "videos": [
+    {
+      "id": "383kpbbhGCM",
+      "title": "עומר ביג מדבר על יוטיוב ישראל ודרמות בקהילה",
+      "publishedAt": "2026-10-02T10:30:36+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/383kpbbhGCM/mqdefault.jpg"
+    },
+    {
+      "id": "aolPBnFKIsY",
+      "title": "ניסיתי את משחק החיקויים החדש עם עודד וזיוואי",
+      "publishedAt": "2026-10-01T10:30:32+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/aolPBnFKIsY/mqdefault.jpg"
+    },
+    {
+      "id": "US085FzNCsQ",
+      "title": "עליתי לשיחה עם הצופים שלי בטיקטוק....",
+      "publishedAt": "2026-09-30T10:30:36+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/US085FzNCsQ/mqdefault.jpg"
+    },
+    {
+      "id": "SjMrnBeWMsw",
+      "title": "דירגתי סטרימרים בלייב... (לא נגמר טוב)",
+      "publishedAt": "2026-09-29T10:30:03+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/SjMrnBeWMsw/mqdefault.jpg"
+    },
+    {
+      "id": "1Hs14KhlSpU",
+      "title": "התגובה שלי למשחק האחרון של פוקוס על 2 מליון דולר!",
+      "publishedAt": "2026-09-28T17:17:05+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/1Hs14KhlSpU/mqdefault.jpg"
+    }
+  ]
 }
