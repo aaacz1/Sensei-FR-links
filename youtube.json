@@ -2,6 +2,12 @@
   "status": "ok",
   "videos": [
     {
+      "id": "E9qJ4GQ95ds",
+      "title": "האחרון שעוזב את האחוזה, זוכה בה",
+      "publishedAt": "2026-10-04T10:30:04+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/E9qJ4GQ95ds/mqdefault.jpg"
+    },
+    {
       "id": "PjYuaslMqwU",
       "title": "אסור לנו להפיל את הבלון?!!",
       "publishedAt": "2026-10-03T10:30:23+00:00",
@@ -30,12 +36,6 @@
       "title": "דירגתי סטרימרים בלייב... (לא נגמר טוב)",
       "publishedAt": "2026-09-29T10:30:03+00:00",
       "thumbnail": "https://i.ytimg.com/vi/SjMrnBeWMsw/mqdefault.jpg"
-    },
-    {
-      "id": "1Hs14KhlSpU",
-      "title": "התגובה שלי למשחק האחרון של פוקוס על 2 מליון דולר!",
-      "publishedAt": "2026-09-28T17:17:05+00:00",
-      "thumbnail": "https://i.ytimg.com/vi/1Hs14KhlSpU/mqdefault.jpg"
     }
   ]
 }
