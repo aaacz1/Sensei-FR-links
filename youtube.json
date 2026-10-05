@@ -2,6 +2,12 @@
   "status": "ok",
   "videos": [
     {
+      "id": "PeGd7VMcIGs",
+      "title": "לקחתי את עומר ביג לאימון בחדר כושר...",
+      "publishedAt": "2026-10-05T10:30:34+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/PeGd7VMcIGs/mqdefault.jpg"
+    },
+    {
       "id": "E9qJ4GQ95ds",
       "title": "האחרון שעוזב את האחוזה, זוכה בה",
       "publishedAt": "2026-10-04T10:30:04+00:00",
@@ -30,12 +36,6 @@
       "title": "עליתי לשיחה עם הצופים שלי בטיקטוק....",
       "publishedAt": "2026-09-30T10:30:36+00:00",
       "thumbnail": "https://i.ytimg.com/vi/US085FzNCsQ/mqdefault.jpg"
-    },
-    {
-      "id": "SjMrnBeWMsw",
-      "title": "דירגתי סטרימרים בלייב... (לא נגמר טוב)",
-      "publishedAt": "2026-09-29T10:30:03+00:00",
-      "thumbnail": "https://i.ytimg.com/vi/SjMrnBeWMsw/mqdefault.jpg"
     }
   ]
 }
