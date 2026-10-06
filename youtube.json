@@ -2,6 +2,12 @@
   "status": "ok",
   "videos": [
     {
+      "id": "jxnsokqbOco",
+      "title": "דירגתי את המסכי בית של הצופים שלי?!! (נגמר רע)",
+      "publishedAt": "2026-10-06T10:30:20+00:00",
+      "thumbnail": "https://i.ytimg.com/vi/jxnsokqbOco/mqdefault.jpg"
+    },
+    {
       "id": "PeGd7VMcIGs",
       "title": "לקחתי את עומר ביג לאימון בחדר כושר...",
       "publishedAt": "2026-10-05T10:30:34+00:00",
@@ -30,12 +36,6 @@
       "title": "ניסיתי את משחק החיקויים החדש עם עודד וזיוואי",
       "publishedAt": "2026-10-01T10:30:32+00:00",
       "thumbnail": "https://i.ytimg.com/vi/aolPBnFKIsY/mqdefault.jpg"
-    },
-    {
-      "id": "US085FzNCsQ",
-      "title": "עליתי לשיחה עם הצופים שלי בטיקטוק....",
-      "publishedAt": "2026-09-30T10:30:36+00:00",
-      "thumbnail": "https://i.ytimg.com/vi/US085FzNCsQ/mqdefault.jpg"
     }
   ]
 }
